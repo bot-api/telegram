@@ -1,0 +1,31 @@
+{
+  "total_count": 1,
+  "photos": [
+    [
+      {
+        "file_id": "AgADAQADracxG87oCAwifY52FDYYdyoW2ykABPxYFPTyioocYkwBAAEC",
+        "file_size": 7920,
+        "width": 160,
+        "height": 160
+      },
+      {
+        "file_id": "AgADAQADracxG87oCAwifY52FDYYdyoW2ykABBedWvJj470nY0wBAAEC",
+        "file_size": 18175,
+        "width": 320,
+        "height": 320
+      },
+      {
+        "file_id": "AgADAQADracxG87oCAwifY52FDYYdyoW2ykABL6tT4iSzvK7ZEwBAAEC",
+        "file_size": 45515,
+        "width": 640,
+        "height": 640
+      },
+      {
+        "file_id": "AgADAQADracxG87oCAwifY52FDYYdyoW2ykABEFzMZ03BS96ZUwBAAEC",
+        "file_size": 48267,
+        "width": 900,
+        "height": 900
+      }
+    ]
+  ]
+}

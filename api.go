@@ -1,0 +1,457 @@
+// Package telegram provides implementation for Telegram Bot API
+//
+package telegram
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"mime/multipart"
+	"net/http"
+	"net/url"
+	"strings"
+
+	"golang.org/x/net/context"
+	"golang.org/x/net/context/ctxhttp"
+)
+
+const (
+	// APIEndpoint is the endpoint for all API methods,
+	// with formatting for Sprintf.
+	APIEndpoint = "https://api.telegram.org/bot%s/%s"
+	// FileEndpoint is the endpoint for downloading a file from Telegram.
+	FileEndpoint = "https://api.telegram.org/file/bot%s/%s"
+)
+
+// HTTPDoer interface helps to test api
+type HTTPDoer interface {
+	Do(*http.Request) (*http.Response, error)
+}
+
+// API implements Telegram bot API
+// described on https://core.telegram.org/bots/api
+type API struct {
+	// token is a unique authentication string,
+	// obtained by each bot when it is created.
+	// The token looks something like
+	// 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
+	token        string
+	client       HTTPDoer
+	apiEndpoint  string
+	fileEndpoint string
+	debug        bool
+}
+
+// New returns API instance with default http client
+func New(token string) *API {
+	return NewWithClient(token, http.DefaultClient)
+}
+
+// NewWithClient returns API instance with custom http client
+func NewWithClient(token string, client HTTPDoer) *API {
+	return &API{
+		token:        token,
+		client:       client,
+		apiEndpoint:  APIEndpoint,
+		fileEndpoint: FileEndpoint,
+	}
+}
+
+// Invoke is a generic method that helps to make request to Telegram Api.
+// Use particular methods instead (e.x. GetMe, GetUpdates etc).
+// The only case when this method seems useful is
+// when Telegram Api has method
+// that still doesn't exist in this implementation.
+func (c *API) Invoke(ctx context.Context, m Method, dst interface{}) error {
+	params, err := m.Values()
+	if err != nil {
+		return err
+	}
+	var req *http.Request
+	if mf, casted := m.(Filer); casted && !mf.Exist() {
+		// upload a file, if FileID doesn't exist
+		req, err = c.getUploadRequest(
+			m.Name(),
+			params,
+			mf.Field(),
+			mf.File(),
+		)
+	} else {
+		req, err = c.getFormRequest(m.Name(), params)
+	}
+	if err != nil {
+		return err
+	}
+	return c.makeRequest(ctx, req, dst)
+}
+
+// Debug enables sending debug messages to default log
+func (c *API) Debug(val bool) {
+	c.debug = val
+}
+
+// Telegram Bot API methods
+
+// GetMe returns basic information about the bot in form of a User object
+func (c *API) GetMe(ctx context.Context) (*User, error) {
+	u := &User{}
+	if err := c.Invoke(ctx, MeCfg{}, u); err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+// GetUpdates requests incoming updates using long polling.
+// This method will not work if an outgoing webhook is set up.
+// In order to avoid getting duplicate updates,
+// recalculate offset after each server response.
+func (c *API) GetUpdates(
+	ctx context.Context,
+	cfg UpdateCfg) ([]Update, error) {
+
+	updates := []Update{}
+	if err := c.Invoke(ctx, cfg, &updates); err != nil {
+		return nil, err
+	}
+	return updates, nil
+}
+
+// GetUserProfilePhotos requests a list of profile pictures for a user.
+func (c *API) GetUserProfilePhotos(
+	ctx context.Context,
+	cfg UserProfilePhotosCfg) (*UserProfilePhotos, error) {
+
+	photos := &UserProfilePhotos{}
+	if err := c.Invoke(ctx, cfg, photos); err != nil {
+		return nil, err
+	}
+	return photos, nil
+}
+
+// SendChatAction tells the user that something is happening
+// on the bot's side. The status is set for 5 seconds or less
+// (when a message arrives from your bot,
+// Telegram clients clear its typing status).
+func (c *API) SendChatAction(ctx context.Context, cfg ChatActionCfg) error {
+	return c.Invoke(ctx, cfg, nil)
+}
+
+// GetFile returns a File which can download a file from Telegram.
+//
+// Requires FileID.
+func (c *API) GetFile(ctx context.Context, cfg FileCfg) (*File, error) {
+	var file File
+	err := c.Invoke(ctx, cfg, &file)
+	if err != nil {
+		return nil, err
+	}
+	file.Link = fmt.Sprintf(c.fileEndpoint, c.token, file.FilePath)
+	return &file, nil
+}
+
+// AnswerCallbackQuery sends a response to an inline query callback.
+func (c *API) AnswerCallbackQuery(
+	ctx context.Context,
+	cfg AnswerCallbackCfg) (bool, error) {
+
+	var result bool
+	return result, c.Invoke(ctx, cfg, &result)
+}
+
+func (c *API) Edit(ctx context.Context, cfg Method) (*EditResult, error) {
+	er := &EditResult{}
+	return er, c.Invoke(ctx, cfg, er)
+}
+
+// Send method sends message.
+//
+// TODO m0sth8: rewrite this doc
+func (c *API) Send(ctx context.Context, cfg Messenger) (*Message, error) {
+	msg := cfg.Message()
+	return msg, c.Invoke(ctx, cfg, msg)
+}
+
+// === Methods based on Send method
+
+// SendMessage sends text message.
+func (c *API) SendMessage(
+	ctx context.Context,
+	cfg MessageCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// SendSticker sends message with sticker.
+func (c *API) SendSticker(
+	ctx context.Context,
+	cfg StickerCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// SendVenue sends venue message.
+func (c *API) SendVenue(
+	ctx context.Context,
+	cfg VenueCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// SendContact sends phone contact message.
+func (c *API) SendContact(
+	ctx context.Context,
+	cfg ContactCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// SendPhoto sends photo.
+func (c *API) SendPhoto(
+	ctx context.Context,
+	cfg PhotoCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// SendAudio sends Audio.
+func (c *API) SendAudio(
+	ctx context.Context,
+	cfg AudioCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// SendVideo sends Video.
+func (c *API) SendVideo(
+	ctx context.Context,
+	cfg VideoCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// SendVoice sends Voice.
+func (c *API) SendVoice(
+	ctx context.Context,
+	cfg VoiceCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// SendDocument sends Document.
+func (c *API) SendDocument(
+	ctx context.Context,
+	cfg DocumentCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// ForwardMessage forwards messages of any kind.
+func (c *API) ForwardMessage(
+	ctx context.Context,
+	cfg ForwardMessageCfg) (*Message, error) {
+
+	return c.Send(ctx, cfg)
+}
+
+// === Methods based on Edit method
+
+// EditMessageCaption modifies the text of message.
+// Use this method to edit only the text of messages
+// sent by the bot or via the bot (for inline bots).
+// On success, if edited message is sent by the bot,
+// the edited Message is returned, otherwise True is returned.
+func (c *API) EditMessageText(
+	ctx context.Context,
+	cfg EditMessageTextCfg) (*EditResult, error) {
+
+	return c.Edit(ctx, cfg)
+}
+
+// EditMessageCaption modifies the caption of message.
+// Use this method to edit only the caption of messages
+// sent by the bot or via the bot (for inline bots).
+// On success, if edited message is sent by the bot,
+// the edited Message is returned, otherwise True is returned.
+func (c *API) EditMessageCaption(
+	ctx context.Context,
+	cfg EditMessageCaptionCfg) (*EditResult, error) {
+
+	return c.Edit(ctx, cfg)
+}
+
+// EditMessageReplyMarkup modifies the reply markup of message.
+// Use this method to edit only the reply markup of messages
+// sent by the bot or via the bot (for inline bots).
+// On success, if edited message is sent by the bot,
+// the edited Message is returned, otherwise True is returned.
+func (c *API) EditMessageReplyMarkup(
+	ctx context.Context,
+	cfg EditMessageReplyMarkupCfg) (*EditResult, error) {
+
+	return c.Edit(ctx, cfg)
+}
+
+// SetWebhook sets a webhook.
+// Use this method to specify a url and receive incoming updates
+// via an outgoing webhook. Whenever there is an update for the bot,
+// we will send an HTTPS POST request to the specified url,
+// containing a JSON‐serialized Update.
+// In case of an unsuccessful request,
+// we will give up after a reasonable amount of attempts.
+//
+// If this is set, GetUpdates will not get any data!
+//
+// If you do not have a legitimate TLS certificate,
+// you need to include your self signed certificate with the config.
+func (c *API) SetWebhook(ctx context.Context, cfg WebhookCfg) error {
+	return c.Invoke(ctx, cfg, nil)
+}
+
+// Internal methods
+
+func (c *API) printf(format string, v ...interface{}) {
+	log.Printf(format, v...)
+}
+
+func (c *API) getFormRequest(
+	method string,
+	params url.Values) (*http.Request, error) {
+
+	urlStr := fmt.Sprintf(c.apiEndpoint, c.token, method)
+	body := params.Encode()
+	if c.debug {
+		c.printf("req: %s, data: %s\n", urlStr, body)
+	}
+
+	req, err := http.NewRequest(
+		"POST",
+		urlStr,
+		strings.NewReader(body),
+	)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	return req, nil
+}
+
+func (c *API) getUploadRequest(
+	method string,
+	params url.Values,
+	field string,
+	file InputFile) (*http.Request, error) {
+
+	urlStr := fmt.Sprintf(c.apiEndpoint, c.token, method)
+
+	if c.debug {
+		c.printf("req with file: %s, data: %s\n;",
+			urlStr, params.Encode())
+	}
+
+	buf := &bytes.Buffer{}
+
+	w := multipart.NewWriter(buf)
+
+	for key, values := range params {
+		for _, value := range values {
+			err := w.WriteField(key, value)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"can't write field %s, cause %s",
+					key, err.Error(),
+				)
+			}
+		}
+	}
+	fw, err := w.CreateFormFile(field, file.Name())
+	if err != nil {
+		return nil, err
+	}
+	if _, err = io.Copy(fw, file.Reader()); err != nil {
+		return nil, err
+	}
+	if err = w.Close(); err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(
+		"POST",
+		urlStr,
+		buf,
+	)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", w.FormDataContentType())
+
+	return req, nil
+}
+
+func (c *API) makeRequest(
+	ctx context.Context,
+	req *http.Request,
+	dst interface{}) error {
+
+	var err error
+	var resp *http.Response
+
+	if httpClient, ok := c.client.(*http.Client); ok {
+		resp, err = ctxhttp.Do(ctx, httpClient, req)
+	} else {
+		// TODO: implement cancel logic for non http.Client
+		resp, err = c.client.Do(req)
+	}
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			if c.debug {
+				c.printf("Body Close error: %s", err.Error())
+			}
+		}
+	}()
+	if c.debug {
+		c.printf("status code: %d", resp.StatusCode)
+	}
+	if resp.StatusCode == http.StatusForbidden {
+		// read all from body to save keep-alive connection.
+		if _, err = io.Copy(ioutil.Discard, resp.Body); err != nil {
+			if c.debug {
+				c.printf("Discard err: %s", err.Error())
+			}
+		}
+		return errForbidden
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	if c.debug {
+		c.printf("received: %s", string(data))
+	}
+
+	apiResponse := APIResponse{}
+	err = json.Unmarshal(data, &apiResponse)
+	if err != nil {
+		return err
+	}
+	if !apiResponse.Ok {
+		if apiResponse.ErrorCode == 401 {
+			return errUnauthorized
+		}
+		return &APIError{
+			Description: apiResponse.Description,
+			ErrorCode:   apiResponse.ErrorCode,
+		}
+	}
+	if dst != nil {
+		err = json.Unmarshal(*apiResponse.Result, dst)
+	}
+	return err
+}
