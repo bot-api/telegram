@@ -18,7 +18,6 @@ func main() {
 
 	if *token == "" {
 		log.Fatal("token flag is required")
-
 	}
 
 	api := telegram.New(*token)
@@ -30,11 +29,11 @@ func main() {
 	defer cancel()
 
 	bot.HandleFunc(func(ctx context.Context) error {
-		update := telebot.GetUpdate(ctx)
+		update := telebot.GetUpdate(ctx) // take update from context
 		if update.Message == nil {
 			return nil
 		}
-		api := telebot.GetAPI(ctx)
+		api := telebot.GetAPI(ctx) // take api from context
 		msg := telegram.CloneMessage(update.Message, nil)
 		_, err := api.Send(ctx, msg)
 		return err

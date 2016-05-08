@@ -252,6 +252,9 @@ func NewWebhookWithCert(link string, file InputFile) WebhookCfg {
 	}
 }
 
+// CloneMessage convert message to Messenger type to send it to another chat.
+// It supports only data message: Text, Sticker, Audio, Photo, Location,
+// Contact, Audio, Voice, Document.
 func CloneMessage(msg *Message, baseMessage *BaseMessage) Messenger {
 	var base BaseMessage
 	if baseMessage == nil {
@@ -321,8 +324,9 @@ func CloneMessage(msg *Message, baseMessage *BaseMessage) Messenger {
 	return nil
 }
 
-// GetUpdates runs loop and requests updates from telegram
-// It breaks loop and returns error if something happened during update
+// GetUpdates runs loop and requests updates from telegram.
+// It breaks loop, close out channel and returns error
+// if something happened during update cycle.
 func GetUpdates(
 	ctx context.Context,
 	api *API,
@@ -330,6 +334,8 @@ func GetUpdates(
 	out chan<- Update) error {
 
 	var rErr error
+	defer close(out)
+
 loop:
 	for {
 		updates, err := api.GetUpdates(
