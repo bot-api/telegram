@@ -8,7 +8,7 @@ PKGSDIRS=$(shell find -L . -type f -name "*.go" -not -path "./Godeps/*")
 
 all: prepare
 
-travis: checkfmt vet errcheck test_v race lint
+travis: checkfmt vet errcheck coverage race lint
 
 prepare: fmt vet checkfmt errcheck test race lint
 
@@ -50,8 +50,15 @@ fmt:
 	@echo "$(OK_COLOR)Formatting$(NO_COLOR)"
 	@echo $(PKGSDIRS) | xargs -I '{p}' -n1 goimports -w {p}
 
+coverage:
+	@echo "$(OK_COLOR)Make coverage report$(NO_COLOR)"
+	@./scripts/coverage.sh
+	-goveralls -coverprofile=gover.coverprofile -service=travis-ci
+
 tools:
 	@echo "$(OK_COLOR)Install tools$(NO_COLOR)"
 	go get golang.org/x/tools/cmd/goimports
 	go get github.com/golang/lint/golint
 	go get github.com/kisielk/errcheck
+	go get github.com/mattn/goveralls
+	go get github.com/modocache/gover

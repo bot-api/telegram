@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/bot-api/telegram.svg?branch=master)](https://travis-ci.org/bot-api/telegram)
 
+[![Coverage Status](https://coveralls.io/repos/github/bot-api/telegram/badge.svg?branch=master)](https://coveralls.io/github/bot-api/telegram?branch=master)
+
 *Alpha version, don't use it.*
 
 Supported go version: 1.5, tip

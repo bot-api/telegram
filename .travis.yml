@@ -9,3 +9,6 @@ install:
   - go get -t ./...
 
 script: make travis
+
+notifications:
+  email: false
