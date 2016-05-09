@@ -1,8 +1,10 @@
 # telegram
 
+[![Build Status](https://travis-ci.org/bot-api/telegram.svg?branch=master)](https://travis-ci.org/bot-api/telegram)
+
 *Alpha version, don't use it.*
 
-Supported go version: 1.4, 1.5, tip
+Supported go version: 1.5, tip
 
 
 Implementation of the telegram bot API, inspired by github.com/go-telegram-bot-api/telegram-bot-api.
@@ -213,7 +215,8 @@ bot.HandleFunc(func(ctx context.Context) error {
 - [ ] Session middleware
 - [ ] Log middleware
 - [ ] Examples
-- [ ] Add travis-ci integration
+- [x] Add travis-ci integration
+- [ ] Add coverage badge
 - [ ] Add integration tests
 
 
