@@ -8,7 +8,7 @@ PKGSDIRS=$(shell find -L . -type f -name "*.go" -not -path "./Godeps/*")
 
 all: prepare
 
-travis: checkfmt vet errcheck test_v test_i race lint
+travis: checkfmt vet errcheck test_v race lint
 
 prepare: fmt vet checkfmt errcheck test race lint
 
@@ -21,8 +21,10 @@ test:
 	@go test -cover ./...
 
 test_i:
+ifdef API_BOT_TOKEN
 	@echo "$(OK_COLOR)Run integration tests$(NO_COLOR)"
 	@go test -cover -tags integration -run TestI_* ./...
+endif
 
 lint:
 	@echo "$(OK_COLOR)Run lint$(NO_COLOR)"
