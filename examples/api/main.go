@@ -1,13 +1,12 @@
 package main
 
 import (
-	"log"
 	"flag"
+	"log"
 
 	"github.com/bot-api/telegram"
 	"golang.org/x/net/context"
 )
-
 
 func main() {
 	token := flag.String("token", "", "telegram bot token")
@@ -33,8 +32,8 @@ func main() {
 	updatesCh := make(chan telegram.Update)
 
 	go telegram.GetUpdates(ctx, api, telegram.UpdateCfg{
-		Timeout: 10, 	// Timeout in seconds for long polling.
-		Offset: 0, 	// Start with the oldest update
+		Timeout: 10, // Timeout in seconds for long polling.
+		Offset:  0,  // Start with the oldest update
 	}, updatesCh)
 
 	for update := range updatesCh {
@@ -45,7 +44,7 @@ func main() {
 		msg := telegram.CloneMessage(update.Message, nil)
 		// echo with the same message
 		if _, err := api.Send(ctx, msg); err != nil {
-			log.Print("send error: %v", err)
+			log.Printf("send error: %v", err)
 		}
 	}
 }

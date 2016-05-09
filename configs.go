@@ -174,6 +174,7 @@ func (cfg FileCfg) Values() (url.Values, error) {
 }
 
 // WebhookCfg contains information about a SetWebhook request.
+// Implements Method and Filer interface
 type WebhookCfg struct {
 	URL string
 	// self generated TLS certificate
@@ -192,10 +193,12 @@ func (cfg WebhookCfg) Values() (url.Values, error) {
 	return v, nil
 }
 
+// Field returns name for webhook file data
 func (cfg WebhookCfg) Field() string {
 	return "certificate"
 }
 
+// File returns certificate data
 func (cfg WebhookCfg) File() InputFile {
 	return cfg.Certificate
 }

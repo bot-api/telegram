@@ -1,0 +1,12 @@
+language: go
+
+go:
+  - 1.4
+  - 1.5
+  - tip
+
+install:
+  - make tools
+  - go get -t ./...
+
+script: make travis

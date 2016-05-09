@@ -149,23 +149,19 @@ func NewLocation(chatID int64, lat float64, lon float64) LocationCfg {
 
 // NewPhotoUpload creates a new photo uploader.
 //
-// chatID is where to send it, file is a string path to the file,
-// FileReader, or FileBytes.
-func NewPhotoUpload(chatID int64, i InputFile) PhotoCfg {
+// chatID is where to send it, inputFile is a file representation.
+func NewPhotoUpload(chatID int64, inputFile InputFile) PhotoCfg {
 	return PhotoCfg{
 		BaseFile: BaseFile{
 			BaseMessage: newBM(chatID),
-			InputFile:   i,
+			InputFile:   inputFile,
 		},
 	}
 }
 
-// NewPhotoUpload creates a new photo uploader.
+// NewPhotoShare creates a new photo uploader.
 //
-// chatID is where to send it, file is a string path to the file,
-// FileReader, or FileBytes.
-//
-// Note that you must send animated GIFs as a document.
+// chatID is where to send it
 func NewPhotoShare(chatID int64, fileID string) PhotoCfg {
 	return PhotoCfg{
 		BaseFile: BaseFile{

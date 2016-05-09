@@ -13,10 +13,10 @@ import (
 	"net/http"
 
 	"github.com/bot-api/telegram"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"golang.org/x/net/context"
 	"golang.org/x/net/context/ctxhttp"
+	"gopkg.in/stretchr/testify.v1/assert"
+	"gopkg.in/stretchr/testify.v1/require"
 )
 
 var (

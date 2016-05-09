@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/bot-api/telegram"
-	"github.com/stretchr/testify/assert"
+	"gopkg.in/stretchr/testify.v1/assert"
 )
 
 func TestMeCfg(t *testing.T) {

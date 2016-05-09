@@ -161,6 +161,15 @@ func (c *API) AnswerCallbackQuery(
 	return result, c.Invoke(ctx, cfg, &result)
 }
 
+// Edit method allows you to change an existing message in the message history
+// instead of sending a new one with a result of an action.
+// This is most useful for messages with inline keyboards using callback queries,
+// but can also help reduce clutter in conversations with regular chat bots.
+// Please note, that it is currently only possible to edit messages without
+// reply_markup or with inline keyboards.
+//
+// You can use this method directly or one of:
+// EditMessageText, EditMessageCaption, EditMessageReplyMarkup,
 func (c *API) Edit(ctx context.Context, cfg Method) (*EditResult, error) {
 	er := &EditResult{}
 	return er, c.Invoke(ctx, cfg, er)
@@ -258,7 +267,7 @@ func (c *API) ForwardMessage(
 
 // === Methods based on Edit method
 
-// EditMessageCaption modifies the text of message.
+// EditMessageText modifies the text of message.
 // Use this method to edit only the text of messages
 // sent by the bot or via the bot (for inline bots).
 // On success, if edited message is sent by the bot,

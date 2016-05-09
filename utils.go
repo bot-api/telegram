@@ -5,11 +5,11 @@ import (
 	"regexp"
 )
 
-var tokenRegex = regexp.MustCompile(`[\d]{3,11}:[\w-]{35}`)
+var tokenRegex = regexp.MustCompile(`^[\d]{3,11}:[\w-]{35}$`)
 
 // IsValidToken returns true if token is a valid telegram bot token
 //
-// Token format is like: 110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw
+// Token format is like: 110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsawq
 func IsValidToken(token string) bool {
 	return tokenRegex.MatchString(token)
 }

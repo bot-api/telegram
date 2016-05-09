@@ -8,8 +8,8 @@ import (
 
 	"github.com/bot-api/telegram"
 	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
+	"gopkg.in/stretchr/testify.v1/assert"
 )
 
 var apiToken = "token"

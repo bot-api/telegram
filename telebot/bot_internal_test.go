@@ -11,14 +11,14 @@ import (
 
 	"github.com/bot-api/telegram"
 	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"golang.org/x/net/context"
+	"gopkg.in/stretchr/testify.v1/assert"
+	"gopkg.in/stretchr/testify.v1/require"
 )
 
 func TestNewWithApi(t *testing.T) {
 	api := &telegram.API{}
-	b := NewWithApi(api)
+	b := NewWithAPI(api)
 	assert.Equal(t, api, b.api)
 	assert.Equal(t, 0, len(b.middleware))
 	assert.NotNil(t, b.errFunc)
@@ -61,7 +61,7 @@ func TestBot_handleUpdate(t *testing.T) {
 	expErr := fmt.Errorf("expected error")
 
 	api := telegram.New("token")
-	b := NewWithApi(api)
+	b := NewWithAPI(api)
 	u := &telegram.Update{
 		UpdateID: 10,
 		Message: &telegram.Message{
@@ -95,7 +95,7 @@ func TestBot_handleUpdate(t *testing.T) {
 	assert.True(t, middlewareInvoked, "middleware wasn't invoked")
 
 	// test EmptyHandler
-	b = NewWithApi(api)
+	b = NewWithAPI(api)
 	b.Use(func(next Handler) Handler {
 		return HandlerFunc(func(ctx context.Context) error {
 			assert.Equal(t,
@@ -113,7 +113,7 @@ func TestBot_getWebhookHandler(t *testing.T) {
 	defer cancel()
 
 	api := telegram.New("token")
-	b := NewWithApi(api)
+	b := NewWithAPI(api)
 	expUpd := telegram.Update{
 		UpdateID: 10,
 		Message: &telegram.Message{
@@ -163,7 +163,7 @@ func TestBot_getWebhookHandler(t *testing.T) {
 
 }
 
-func NewApiResponder(status int, result interface{}) httpmock.Responder {
+func NewAPIResponder(status int, result interface{}) httpmock.Responder {
 	data, err := json.Marshal(result)
 	if err != nil {
 		panic(err)
@@ -186,7 +186,7 @@ func TestBot_updateMe(t *testing.T) {
 
 	client := &http.Client{}
 	api := telegram.NewWithClient("_token", client)
-	b := NewWithApi(api)
+	b := NewWithAPI(api)
 	expMe := telegram.User{
 		ID:       10,
 		Username: "test_bot",
@@ -198,7 +198,7 @@ func TestBot_updateMe(t *testing.T) {
 	httpmock.RegisterResponder(
 		"POST",
 		"https://api.telegram.org/bot_token/getMe",
-		NewApiResponder(200, expMe),
+		NewAPIResponder(200, expMe),
 	)
 	err := b.updateMe(ctx)
 	require.NoError(t, err)
@@ -236,15 +236,15 @@ func TestBot_Serve(t *testing.T) {
 	httpmock.RegisterResponder(
 		"POST",
 		"https://api.telegram.org/bot_token/getMe",
-		NewApiResponder(200, expMe),
+		NewAPIResponder(200, expMe),
 	)
 	httpmock.RegisterResponder(
 		"POST",
 		"https://api.telegram.org/bot_token/getUpdates",
-		NewApiResponder(200, expUpd),
+		NewAPIResponder(200, expUpd),
 	)
 
-	b := NewWithApi(api)
+	b := NewWithAPI(api)
 	handleCh := make(chan context.Context, 1)
 	b.HandleFunc(func(ctx context.Context) error {
 		select {
@@ -319,10 +319,10 @@ func TestBot_ServeByWebhook(t *testing.T) {
 	httpmock.RegisterResponder(
 		"POST",
 		"https://api.telegram.org/bot_token/getMe",
-		NewApiResponder(200, expMe),
+		NewAPIResponder(200, expMe),
 	)
 
-	b := NewWithApi(api)
+	b := NewWithAPI(api)
 
 	handleCh := make(chan context.Context, 1)
 	b.HandleFunc(func(ctx context.Context) error {

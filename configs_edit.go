@@ -22,6 +22,7 @@ type BaseEdit struct {
 	ReplyMarkup ReplyMarkup
 }
 
+// Values returns a url.Values representation of BaseEdit.
 func (m BaseEdit) Values() (url.Values, error) {
 	v := url.Values{}
 
@@ -61,6 +62,7 @@ type EditMessageTextCfg struct {
 	DisableWebPagePreview bool
 }
 
+// Values returns a url.Values representation of EditMessageTextCfg.
 func (cfg EditMessageTextCfg) Values() (url.Values, error) {
 	v, err := cfg.BaseEdit.Values()
 	if err != nil {
@@ -78,6 +80,7 @@ func (cfg EditMessageTextCfg) Values() (url.Values, error) {
 	return v, nil
 }
 
+// Name returns method name
 func (EditMessageTextCfg) Name() string {
 	return editMessageTextMethod
 }
@@ -89,6 +92,7 @@ type EditMessageCaptionCfg struct {
 	Caption string
 }
 
+// Values returns a url.Values representation of EditMessageCaptionCfg.
 func (cfg EditMessageCaptionCfg) Values() (url.Values, error) {
 	v, err := cfg.BaseEdit.Values()
 	if err != nil {
@@ -99,6 +103,7 @@ func (cfg EditMessageCaptionCfg) Values() (url.Values, error) {
 	return v, nil
 }
 
+// Name returns method name
 func (EditMessageCaptionCfg) Name() string {
 	return editMessageCaptionMethod
 }
@@ -108,10 +113,12 @@ type EditMessageReplyMarkupCfg struct {
 	BaseEdit
 }
 
+// Values returns a url.Values representation of EditMessageReplyMarkupCfg.
 func (cfg EditMessageReplyMarkupCfg) Values() (url.Values, error) {
 	return cfg.BaseEdit.Values()
 }
 
+// Name returns method name
 func (EditMessageReplyMarkupCfg) Name() string {
 	return editMessageReplyMarkupMethod
 }

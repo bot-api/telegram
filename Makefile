@@ -8,7 +8,7 @@ PKGSDIRS=$(shell find -L . -type f -name "*.go" -not -path "./Godeps/*")
 
 all: prepare
 
-travis: checkfmt vet lint errcheck test_v test_i
+travis: checkfmt vet errcheck test_v test_i race lint
 
 prepare: fmt vet checkfmt errcheck test race lint
 

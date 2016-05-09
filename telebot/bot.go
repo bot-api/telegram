@@ -12,10 +12,7 @@ import (
 
 type apiKey struct{}
 type updateKey struct{}
-
-//type botContext struct {
-//	context.Context
-//}
+type webhookKey struct{}
 
 // GetAPI takes telegram API from context.
 // Raises panic if context doesn't have API instance.
@@ -29,16 +26,26 @@ func GetUpdate(ctx context.Context) *telegram.Update {
 	return ctx.Value(updateKey{}).(*telegram.Update)
 }
 
+// WithUpdate returns context with telegram Update inside.
+// Use GetUpdate to take Update from context.
 func WithUpdate(ctx context.Context, u *telegram.Update) context.Context {
 	return context.WithValue(ctx, updateKey{}, u)
 }
 
+// WithAPI returns context with telegram api inside.
+// Use GetAPI to take api from context.
 func WithAPI(ctx context.Context, api *telegram.API) context.Context {
 	return context.WithValue(ctx, apiKey{}, api)
 }
 
-// Bot
-// Bot is not thread safe
+// IsWebhook returns true if update received by webhook
+func IsWebhook(ctx context.Context) bool {
+	return ctx.Value(webhookKey{}) != nil
+}
+
+// A Bot object helps to work with telegram bot api using handlers.
+//
+// Bot initialization is not thread safe.
 type Bot struct {
 	api *telegram.API
 	me  *telegram.User
@@ -48,8 +55,8 @@ type Bot struct {
 	errFunc    ErrorFunc
 }
 
-// NewWithApi returns bot with custom api client
-func NewWithApi(api *telegram.API) *Bot {
+// NewWithAPI returns bot with custom API client
+func NewWithAPI(api *telegram.API) *Bot {
 	return &Bot{
 		api:        api,
 		middleware: []MiddlewareFunc{},
@@ -61,17 +68,20 @@ func NewWithApi(api *telegram.API) *Bot {
 
 // New returns bot with default api client
 func New(token string) *Bot {
-	return NewWithApi(telegram.New(token))
+	return NewWithAPI(telegram.New(token))
 }
 
+// Use adds middleware to a middleware chain.
 func (b *Bot) Use(middleware ...MiddlewareFunc) {
 	b.middleware = append(b.middleware, middleware...)
 }
 
+// Handle setups handler to handle telegram updates.
 func (b *Bot) Handle(handler Handler) {
 	b.handler = handler
 }
 
+// HandleFunc takes HandlerFunc and sets handler.
 func (b *Bot) HandleFunc(handler HandlerFunc) {
 	b.handler = handler
 }
@@ -82,7 +92,8 @@ func (b *Bot) ErrorFunc(errFunc ErrorFunc) {
 	b.errFunc = errFunc
 }
 
-func (b *Bot) Serve(ctx context.Context) error {
+// ServeWithConfig runs update cycle with custom update config.
+func (b *Bot) ServeWithConfig(ctx context.Context, cfg telegram.UpdateCfg) error {
 	if err := b.updateMe(ctx); err != nil {
 		return err
 	}
@@ -90,12 +101,11 @@ func (b *Bot) Serve(ctx context.Context) error {
 	var rErr error
 	errCh := make(chan error, 1)
 	updatesCh := make(chan telegram.Update)
-	lastUpdate := uint64(0)
 	go func() {
 		errCh <- telegram.GetUpdates(
 			ctx,
 			b.api,
-			telegram.NewUpdate(lastUpdate),
+			cfg,
 			updatesCh)
 	}()
 loop:
@@ -111,6 +121,17 @@ loop:
 	return rErr
 }
 
+// Serve runs update cycle with default update config.
+// Offset is zero and timeout is 30 seconds.
+func (b *Bot) Serve(ctx context.Context) error {
+	cfg := telegram.NewUpdate(0)
+	return b.ServeWithConfig(ctx, cfg)
+}
+
+// ServeByWebhook returns webhook handler,
+// that can handle incoming telegram webhook messages.
+//
+// Use IsWebhook function to identify webhook updates.
 func (b *Bot) ServeByWebhook(ctx context.Context) (http.HandlerFunc, error) {
 	if err := b.updateMe(ctx); err != nil {
 		return nil, err
@@ -124,7 +145,13 @@ func (b *Bot) ServeByWebhook(ctx context.Context) (http.HandlerFunc, error) {
 			case <-ctx.Done():
 				break loop
 			case update := <-updatesCh:
-				b.handleUpdate(ctx, &update)
+				b.handleUpdate(
+					context.WithValue(
+						ctx,
+						webhookKey{},
+						struct{}{}),
+					&update,
+				)
 			}
 		}
 	}()

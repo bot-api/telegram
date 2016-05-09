@@ -28,7 +28,7 @@ func main() {
 
 	api := telegram.New(*token)
 	api.Debug(*debug)
-	bot := telebot.NewWithApi(api)
+	bot := telebot.NewWithAPI(api)
 
 	netCtx, cancel := context.WithCancel(context.Background())
 	defer cancel()

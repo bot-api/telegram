@@ -12,7 +12,7 @@ import (
 )
 
 type (
-	// RecoverConfig defines the config for recover middleware.
+	// RecoverCfg defines the config for recover middleware.
 	RecoverCfg struct {
 		// StackSize is the stack size to be printed.
 		// Optional, with default value as 4 KB.
@@ -53,8 +53,8 @@ func Recover() MiddlewareFunc {
 	return RecoverWithConfig(DefaultRecoverConfig)
 }
 
-// Recover returns a middleware which recovers from panics anywhere in the chain
-// and returns nil error.
+// RecoverWithConfig returns a middleware which recovers from panics anywhere
+// in the chain and returns nil error.
 // It takes RecoverCfg to configure itself.
 func RecoverWithConfig(cfg RecoverCfg) MiddlewareFunc {
 	// Defaults

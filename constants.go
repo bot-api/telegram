@@ -78,3 +78,17 @@ const (
 	PreEntityType        = "pre"       // monowidth block
 	TextLinkEntityType   = "text_link" // for clickable text URLs
 )
+
+// MessageType constants helps to identify message type
+//const (
+//	TextMessage = iota
+//	AudioMessage
+//	VideoMessage
+//	DocumentMessage
+//	PhotoMessage
+//	StickerMessage
+//	VoiceMessage
+//	ContactMessage
+//	LocationMessage
+//	VenueMessage
+//)

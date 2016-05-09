@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/bot-api/telegram"
-	telebot "github.com/bot-api/telegram/telebot"
+	"github.com/bot-api/telegram/telebot"
 	"golang.org/x/net/context"
 )
 
@@ -22,7 +22,7 @@ func main() {
 
 	api := telegram.New(*token)
 	api.Debug(*debug)
-	bot := telebot.NewWithApi(api)
+	bot := telebot.NewWithAPI(api)
 	bot.Use(telebot.Recover()) // recover if handler panic
 
 	netCtx, cancel := context.WithCancel(context.Background())

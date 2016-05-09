@@ -26,8 +26,11 @@ type Messenger interface {
 
 // Filer is any config type that can be sent that includes a file.
 type Filer interface {
+	// Field name for file data
 	Field() string
+	// File data
 	File() InputFile
+	// Exist returns true if file exists on telegram servers
 	Exist() bool
 }
 
@@ -37,6 +40,7 @@ type ReplyMarkup interface {
 	Markup() (string, error)
 }
 
+// InputFile describes interface for input files.
 type InputFile interface {
 	Reader() io.Reader
 	Name() string

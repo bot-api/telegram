@@ -2,6 +2,8 @@
 
 *Alpha version, don't use it.*
 
+Supported go version: 1.4, 1.5, tip
+
 
 Implementation of the telegram bot API, inspired by github.com/go-telegram-bot-api/telegram-bot-api.
 
@@ -78,7 +80,7 @@ func main() {
 		msg := telegram.CloneMessage(update.Message, nil)
 		// echo with the same message
 		if _, err := api.Send(ctx, msg); err != nil {
-			log.Print("send error: %v", err)
+			log.Printf("send error: %v", err)
 		}
 	}
 }
@@ -90,7 +92,6 @@ func main() {
 
 ```go
 package main
-
 // Simple echo bot, that responses with the same message
 
 import (
@@ -98,7 +99,7 @@ import (
 	"log"
 
 	"github.com/bot-api/telegram"
-	telebot "github.com/bot-api/telegram/telebot"
+	"github.com/bot-api/telegram/telebot"
 	"golang.org/x/net/context"
 )
 
@@ -113,7 +114,7 @@ func main() {
 
 	api := telegram.New(*token)
 	api.Debug(*debug)
-	bot := telebot.NewWithApi(api)
+	bot := telebot.NewWithAPI(api)
 	bot.Use(telebot.Recover()) // recover if handler panic
 
 	netCtx, cancel := context.WithCancel(context.Background())
@@ -154,6 +155,53 @@ func main() {
 }
 ```
 
+Use callback query and edit bot's message
+
+`go run ./examples/callback/main.go -debug -token BOT_TOKEN`
+
+
+```go
+
+bot.HandleFunc(func(ctx context.Context) error {
+    update := telebot.GetUpdate(ctx) // take update from context
+    api := telebot.GetAPI(ctx) // take api from context
+
+    if update.CallbackQuery != nil {
+        data := update.CallbackQuery.Data
+        if strings.HasPrefix(data, "sex:") {
+            cfg := telegram.NewEditMessageText(
+                update.Chat().ID,
+                update.CallbackQuery.Message.MessageID,
+                fmt.Sprintf("You sex: %s", data[4:]),
+            )
+            api.AnswerCallbackQuery(
+                ctx,
+                telegram.NewAnswerCallback(
+                    update.CallbackQuery.ID,
+                    "Your configs changed",
+                ),
+            )
+            _, err := api.EditMessageText(ctx, cfg)
+            return err
+        }
+    }
+
+    msg := telegram.NewMessage(update.Chat().ID,
+        "Your sex:")
+    msg.ReplyMarkup = telegram.InlineKeyboardMarkup{
+        InlineKeyboard: telegram.NewVInlineKeyboard(
+            "sex:",
+            []string{"Female", "Male",},
+            []string{"female", "male",},
+        ),
+    }
+    _, err := api.SendMessage(ctx, msg)
+    return err
+
+})
+
+
+```
 
 
 

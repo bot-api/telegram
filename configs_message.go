@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"bytes"
 	"io"
 	"net/url"
 	"strconv"
@@ -258,10 +259,17 @@ func (l localFile) Name() string {
 	return l.filename
 }
 
+// NewInputFile takes Reader object and returns InputFile.
 func NewInputFile(filename string, r io.Reader) InputFile {
 	return localFile{filename, r}
 }
 
+// NewBytesFile takes byte slice and returns InputFile.
+func NewBytesFile(filename string, data []byte) InputFile {
+	return NewInputFile(filename, bytes.NewBuffer(data))
+}
+
+// BaseFile describes file settings. It's an abstract type.
 type BaseFile struct {
 	BaseMessage
 	FileID    string
@@ -269,14 +277,17 @@ type BaseFile struct {
 	InputFile InputFile
 }
 
+// Exist returns true if file exists on telegram servers
 func (b BaseFile) Exist() bool {
 	return b.FileID != ""
 }
 
+// File returns InputFile object that are used to create request
 func (b BaseFile) File() InputFile {
 	return b.InputFile
 }
 
+// Values returns a url.Values representation of BaseFile.
 func (b BaseFile) Values() (url.Values, error) {
 	v, err := b.BaseMessage.Values()
 	if err != nil {
@@ -316,6 +327,7 @@ func (cfg PhotoCfg) Values() (url.Values, error) {
 	return v, nil
 }
 
+// Field returns name for photo file data
 func (cfg PhotoCfg) Field() string {
 	return photoField
 }
@@ -357,6 +369,7 @@ func (cfg AudioCfg) Values() (url.Values, error) {
 	return v, nil
 }
 
+// Field returns name for audio file data
 func (cfg AudioCfg) Field() string {
 	return audioField
 }
@@ -394,6 +407,7 @@ func (cfg VideoCfg) Values() (url.Values, error) {
 	return v, nil
 }
 
+// Field returns name for video file data
 func (cfg VideoCfg) Field() string {
 	return videoField
 }
@@ -430,6 +444,7 @@ func (cfg VoiceCfg) Values() (url.Values, error) {
 	return v, nil
 }
 
+// Field returns name for voice file data
 func (cfg VoiceCfg) Field() string {
 	return voiceField
 }
@@ -459,11 +474,13 @@ func (cfg DocumentCfg) Values() (url.Values, error) {
 	return v, nil
 }
 
+// Field returns name for document file data
 func (cfg DocumentCfg) Field() string {
 	return documentField
 }
 
 // StickerCfg contains information about a SendSticker request.
+// Implements Filer and Messenger interfaces.
 type StickerCfg struct {
 	BaseFile
 }
@@ -486,6 +503,7 @@ func (cfg StickerCfg) Name() string {
 	return sendStickerMethod
 }
 
+// Field returns name for sticker file data
 func (cfg StickerCfg) Field() string {
 	return stickerField
 }

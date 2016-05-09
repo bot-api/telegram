@@ -14,9 +14,9 @@ import (
 	"mime/multipart"
 	"strings"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"golang.org/x/net/context"
+	"gopkg.in/stretchr/testify.v1/assert"
+	"gopkg.in/stretchr/testify.v1/require"
 )
 
 func TestNew(t *testing.T) {

@@ -1,13 +1,13 @@
 package telebot_test
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
-	"bytes"
 
 	"github.com/bot-api/telegram/telebot"
-	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
+	"gopkg.in/stretchr/testify.v1/assert"
 )
 
 func TestRecoverWithConfig(t *testing.T) {

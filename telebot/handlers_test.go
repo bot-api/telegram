@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/bot-api/telegram/telebot"
-	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
+	"gopkg.in/stretchr/testify.v1/assert"
 )
 
 func TestEmpty(t *testing.T) {
