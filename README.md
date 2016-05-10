@@ -4,7 +4,7 @@
 
 *Alpha version, don't use it.*
 
-Supported go version: 1.5, tip
+Supported go version: 1.5, 1.6, tip
 
 
 Implementation of the telegram bot API, inspired by github.com/go-telegram-bot-api/telegram-bot-api.
