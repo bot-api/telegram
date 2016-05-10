@@ -71,11 +71,11 @@ func TestBaseMessage_Values(t *testing.T) {
 				DisableNotification: true,
 				ReplyMarkup: &telegram.ReplyKeyboardMarkup{
 					Keyboard: [][]telegram.KeyboardButton{
-						[]telegram.KeyboardButton{
-							telegram.KeyboardButton{
+						{
+							{
 								Text: "1",
 							},
-							telegram.KeyboardButton{
+							{
 								Text: "2",
 							},
 						},

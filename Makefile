@@ -49,6 +49,7 @@ checkfmt:
 fmt:
 	@echo "$(OK_COLOR)Formatting$(NO_COLOR)"
 	@echo $(PKGSDIRS) | xargs -I '{p}' -n1 goimports -w {p}
+	@echo $(PKGSDIRS) | xargs -I '{p}' -n1 gofmt -w -s {p}
 
 coverage:
 	@echo "$(OK_COLOR)Make coverage report$(NO_COLOR)"
