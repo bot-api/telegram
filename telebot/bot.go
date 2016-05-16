@@ -113,7 +113,14 @@ loop:
 		select {
 		case rErr = <-errCh:
 			break loop
-		case update := <-updatesCh:
+		case update, ok := <-updatesCh:
+			if !ok {
+				// update channel was closed, wait for error
+				select {
+				case rErr = <-errCh:
+					break loop
+				}
+			}
 			b.handleUpdate(ctx, &update)
 
 		}

@@ -5,6 +5,8 @@ package telegram_test
 import (
 	"errors"
 	"net/url"
+
+	"github.com/bot-api/telegram"
 )
 
 type valuesI interface {
@@ -18,10 +20,20 @@ type cfgTT struct {
 	cfg    valuesI
 }
 
-type replyBadMarkup struct{}
+type replyBadMarkup struct {
+	telegram.MarkReplyMarkup
+}
 
 var marshalError = errors.New("Can't be marshalled")
 
-func (m replyBadMarkup) Markup() (string, error) {
-	return "", marshalError
+func (m replyBadMarkup) MarshalJSON() ([]byte, error) {
+	return nil, marshalError
+}
+
+type badInlineQueryResult struct {
+	telegram.MarkInlineQueryResult
+}
+
+func (m badInlineQueryResult) MarshalJSON() ([]byte, error) {
+	return nil, marshalError
 }

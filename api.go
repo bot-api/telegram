@@ -1,6 +1,6 @@
-// Package telegram provides implementation for Telegram Bot API
-//
 package telegram
+
+// Package telegram provides implementation for Telegram Bot API
 
 import (
 	"bytes"
@@ -31,6 +31,14 @@ type HTTPDoer interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
+// DebugFunc describes function for debugging.
+type DebugFunc func(msg string, fields map[string]interface{})
+
+// DefaultDebugFunc prints debug message to default logger
+var DefaultDebugFunc = func(msg string, fields map[string]interface{}) {
+	log.Printf("%s %v", msg, fields)
+}
+
 // API implements Telegram bot API
 // described on https://core.telegram.org/bots/api
 type API struct {
@@ -43,6 +51,7 @@ type API struct {
 	apiEndpoint  string
 	fileEndpoint string
 	debug        bool
+	debugFunc    DebugFunc
 }
 
 // New returns API instance with default http client
@@ -57,6 +66,7 @@ func NewWithClient(token string, client HTTPDoer) *API {
 		client:       client,
 		apiEndpoint:  APIEndpoint,
 		fileEndpoint: FileEndpoint,
+		debugFunc:    DefaultDebugFunc,
 	}
 }
 
@@ -91,6 +101,11 @@ func (c *API) Invoke(ctx context.Context, m Method, dst interface{}) error {
 // Debug enables sending debug messages to default log
 func (c *API) Debug(val bool) {
 	c.debug = val
+}
+
+// DebugFunc replaces default debug function
+func (c *API) DebugFunc(f DebugFunc) {
+	c.debugFunc = f
 }
 
 // Telegram Bot API methods
@@ -321,8 +336,10 @@ func (c *API) SetWebhook(ctx context.Context, cfg WebhookCfg) error {
 
 // Internal methods
 
-func (c *API) printf(format string, v ...interface{}) {
-	log.Printf(format, v...)
+func (c *API) print(msg string, fields map[string]interface{}) {
+	if c.debugFunc != nil {
+		c.debugFunc(msg, fields)
+	}
 }
 
 func (c *API) getFormRequest(
@@ -332,7 +349,10 @@ func (c *API) getFormRequest(
 	urlStr := fmt.Sprintf(c.apiEndpoint, c.token, method)
 	body := params.Encode()
 	if c.debug {
-		c.printf("req: %s, data: %s\n", urlStr, body)
+		c.print("request", map[string]interface{}{
+			"url":  urlStr,
+			"data": body,
+		})
 	}
 
 	req, err := http.NewRequest(
@@ -357,8 +377,12 @@ func (c *API) getUploadRequest(
 	urlStr := fmt.Sprintf(c.apiEndpoint, c.token, method)
 
 	if c.debug {
-		c.printf("req with file: %s, data: %s\n;",
-			urlStr, params.Encode())
+		c.print("file request", map[string]interface{}{
+			"url":        urlStr,
+			"data":       params.Encode(),
+			"file_field": field,
+			"file_name":  file.Name(),
+		})
 	}
 
 	buf := &bytes.Buffer{}
@@ -420,18 +444,24 @@ func (c *API) makeRequest(
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
 			if c.debug {
-				c.printf("Body Close error: %s", err.Error())
+				c.print("body close error", map[string]interface{}{
+					"error": err.Error(),
+				})
 			}
 		}
 	}()
 	if c.debug {
-		c.printf("status code: %d", resp.StatusCode)
+		c.print("response", map[string]interface{}{
+			"status_code": resp.StatusCode,
+		})
 	}
 	if resp.StatusCode == http.StatusForbidden {
 		// read all from body to save keep-alive connection.
 		if _, err = io.Copy(ioutil.Discard, resp.Body); err != nil {
 			if c.debug {
-				c.printf("Discard err: %s", err.Error())
+				c.print("discard error", map[string]interface{}{
+					"error": err.Error(),
+				})
 			}
 		}
 		return errForbidden
@@ -442,7 +472,9 @@ func (c *API) makeRequest(
 		return err
 	}
 	if c.debug {
-		c.printf("received: %s", string(data))
+		c.print("response", map[string]interface{}{
+			"data": string(data),
+		})
 	}
 
 	apiResponse := APIResponse{}

@@ -1,15 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
-	"strings"
-
-	"encoding/json"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bot-api/telegram"
