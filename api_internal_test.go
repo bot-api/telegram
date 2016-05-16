@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 	"time"
-
-	"mime/multipart"
-	"strings"
 
 	"golang.org/x/net/context"
 	"gopkg.in/stretchr/testify.v1/assert"

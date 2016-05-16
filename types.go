@@ -462,7 +462,7 @@ type Venue struct {
 	// Name of the venue
 	Title string `json:"title"`
 	// Address of the venue
-	Address string `json:""`
+	Address string `json:"address"`
 	// Foursquare identifier of the venue. Optional.
 	FoursquareID string `json:"foursquare_id,omitempty"`
 }
@@ -484,34 +484,6 @@ type UserProfilePhotos struct {
 	TotalCount int `json:"total_count"`
 	// Requested profile pictures (in up to 4 sizes each)
 	Photos [][]PhotoSize `json:"photos"`
-}
-
-// InlineQuery is an incoming inline query. When the user sends
-// an empty query, your bot could return some default or
-// trending results.
-type InlineQuery struct {
-	// ID is a unique identifier for this query.
-	ID string `json:"id"`
-	// From is a sender.
-	From User `json:"from"`
-	// Sender location, only for bots that request user location.
-	// Optional.
-	Location *Location `json:"location,omitempty"`
-	// Query is a text of the query.
-	Query string `json:"query"`
-	// Offset of the results to be returned, can be controlled by the bot.
-	Offset string `json:"offset"`
-}
-
-// ChosenInlineResult represents a result of an inline query
-// that was chosen by the user and sent to their chat partner
-type ChosenInlineResult struct {
-	// ResultID is a unique identifier for the result that was chosen.
-	ResultID string `json:"result_id"`
-	// From is a user that chose the result.
-	From User `json:"from"`
-	// Query is used to obtain the result.
-	Query string `json:"query"`
 }
 
 // CallbackQuery represents an incoming callback query
@@ -539,20 +511,14 @@ type CallbackQuery struct {
 	Data string `json:"data"`
 }
 
-// InputTextMessageContent represents the content of a text message
-// to be sent as the result of an inline query.
-type InputTextMessageContent struct {
-	// Text of the message to be sent, 1‐4096 characters
-	MessageText string `json:"message_text"`
-	// Send Markdown or HTML, if you want Telegram apps to show
-	// bold, italic, fixed‐width text or inline URLs in your bot's message.
-	// Use Mode constants. Optional.
-	ParseMode string `json:"parse_mode,omitempty"`
-	// Disables link previews for links in this message.
-	DisableWebPagePreview bool `json:"disable_web_page_preview,omitempty"`
-}
-
 // ======= Markups
+
+// A MarkReplyMarkup implements ReplyMarkup interface.
+// You can mark your structures with this object.
+type MarkReplyMarkup struct{}
+
+// ReplyMarkup is a fake method that helps to identify implementations
+func (MarkReplyMarkup) ReplyMarkup() {}
 
 // KeyboardButton object represents one button of the reply keyboard.
 // Optional fields are mutually exclusive.
@@ -577,6 +543,8 @@ type KeyboardButton struct {
 // ReplyKeyboardMarkup represents a custom keyboard with reply options.
 // Implements ReplyMarkup interface.
 type ReplyKeyboardMarkup struct {
+	MarkReplyMarkup
+
 	// Array of button rows, each represented by an Array of Strings
 	Keyboard [][]KeyboardButton `json:"keyboard"`
 	// Requests clients to resize the keyboard vertically
@@ -601,50 +569,27 @@ type ReplyKeyboardMarkup struct {
 	Selective bool `json:"selective,omitempty"`
 }
 
-// Markup return json string for ReplyKeyboardMarkup object.
-func (m ReplyKeyboardMarkup) Markup() (string, error) {
-	data, err := json.Marshal(m)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
-}
-
 // ReplyKeyboardHide tells Telegram clients to hide the current
 // custom keyboard and display the default letter-keyboard.
 // Implements ReplyMarkup interface.
 type ReplyKeyboardHide struct {
+	MarkReplyMarkup
+
 	HideKeyboard bool `json:"hide_keyboard"`
 	Selective    bool `json:"selective"` // optional
-}
-
-// Markup return json string for ReplyKeyboardHide object.
-func (m ReplyKeyboardHide) Markup() (string, error) {
-	data, err := json.Marshal(m)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
 }
 
 // ForceReply allows the Bot to have users directly reply to it without
 // additional interaction.
 // Implements ReplyMarkup interface.
 type ForceReply struct {
+	MarkReplyMarkup
+
 	ForceReply bool `json:"force_reply"`
 	Selective  bool `json:"selective"` // optional
 }
 
-// Markup return json string for ForceReply object.
-func (m ForceReply) Markup() (string, error) {
-	data, err := json.Marshal(m)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
-}
-
-// InlineKeyboardButton bject represents one button of an inline keyboard.
+// InlineKeyboardButton object represents one button of an inline keyboard.
 // You must use exactly one of the optional fields.
 //
 // Note: This will only work in Telegram versions
@@ -684,14 +629,7 @@ type InlineKeyboardButton struct {
 // released after 9 April, 2016.
 // Older clients will display unsupported message.
 type InlineKeyboardMarkup struct {
-	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
-}
+	MarkReplyMarkup
 
-// Markup return json string for InlineKeyboardMarkup object.
-func (m InlineKeyboardMarkup) Markup() (string, error) {
-	data, err := json.Marshal(m)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
+	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
 }

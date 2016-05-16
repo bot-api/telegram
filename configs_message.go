@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/url"
 	"strconv"
@@ -39,11 +40,11 @@ func (m BaseMessage) Values() (url.Values, error) {
 	}
 
 	if m.ReplyMarkup != nil {
-		data, err := m.ReplyMarkup.Markup()
+		data, err := json.Marshal(m.ReplyMarkup)
 		if err != nil {
 			return nil, err
 		}
-		v.Add("reply_markup", data)
+		v.Add("reply_markup", string(data))
 	}
 	if m.DisableNotification {
 		v.Add(

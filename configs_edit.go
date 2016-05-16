@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"encoding/json"
 	"net/url"
 	"strconv"
 )
@@ -39,11 +40,11 @@ func (m BaseEdit) Values() (url.Values, error) {
 	}
 
 	if m.ReplyMarkup != nil {
-		data, err := m.ReplyMarkup.Markup()
+		data, err := json.Marshal(m.ReplyMarkup)
 		if err != nil {
 			return nil, err
 		}
-		v.Add("reply_markup", data)
+		v.Add("reply_markup", string(data))
 	}
 
 	return v, nil

@@ -42,6 +42,7 @@ const (
 	answerCallbackQueryMethod = "answerCallbackQuery"
 	setWebhookMethod          = "setWebhook"
 	getFileMethod             = "getFile"
+	answerInlineQueryMethod   = "answerInlineQuery"
 
 	editMessageTextMethod        = "editMessageText"
 	editMessageCaptionMethod     = "editMessageCaption"

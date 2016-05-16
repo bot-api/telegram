@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"encoding/json"
 	"net/url"
 	"strconv"
 )
@@ -228,5 +229,70 @@ func (cfg AnswerCallbackCfg) Values() (url.Values, error) {
 	v.Add("callback_query_id", cfg.CallbackQueryID)
 	v.Add("text", cfg.Text)
 	v.Add("show_alert", strconv.FormatBool(cfg.ShowAlert))
+	return v, nil
+}
+
+// AnswerInlineQueryCfg contains information on making an InlineQuery response.
+type AnswerInlineQueryCfg struct {
+	// Unique identifier for the answered query
+	InlineQueryID string              `json:"inline_query_id"`
+	Results       []InlineQueryResult `json:"results"`
+	// The maximum amount of time in seconds
+	// that the result of the inline query may be cached on the server.
+	// Defaults to 300.
+	CacheTime int `json:"cache_time,omitempty"`
+	// Pass True, if results may be cached on the server side
+	// only for the user that sent the query.
+	// By default, results may be returned to any user
+	// who sends the same query
+	IsPersonal bool `json:"is_personal,omitempty"`
+	// Pass the offset that a client should send in the next query
+	// with the same text to receive more results.
+	// Pass an empty string if there are no more results
+	// or if you don‘t support pagination.
+	// Offset length can’t exceed 64 bytes.
+	NextOffset string `json:"next_offset,omitempty"`
+	// If passed, clients will display a button with specified text
+	// that switches the user to a private chat with the bot and
+	// sends the bot a start message with the parameter switch_pm_parameter
+	SwitchPMText string `json:"switch_pm_text,omitempty"`
+	// Parameter for the start message sent to the bot
+	// when user presses the switch button
+	SwitchPMParameter string `json:"switch_pm_parameter"`
+}
+
+// Name returns method name
+func (cfg AnswerInlineQueryCfg) Name() string {
+	return answerInlineQueryMethod
+}
+
+// Values returns a url.Values representation of AnswerInlineQueryCfg.
+// Returns a RequiredError if Action is empty.
+func (cfg AnswerInlineQueryCfg) Values() (url.Values, error) {
+	v := url.Values{}
+	if cfg.Results == nil || len(cfg.Results) == 0 {
+		return nil, NewRequiredError("Results")
+	}
+	data, err := json.Marshal(cfg.Results)
+	if err != nil {
+		return nil, err
+	}
+	v.Add("results", string(data))
+	v.Add("inline_query_id", cfg.InlineQueryID)
+	if cfg.CacheTime > 0 {
+		v.Add("cache_time", strconv.Itoa(cfg.CacheTime))
+	}
+	if cfg.IsPersonal {
+		v.Add("is_personal", strconv.FormatBool(cfg.IsPersonal))
+	}
+	if cfg.NextOffset != "" {
+		v.Add("next_offset", cfg.NextOffset)
+	}
+	if cfg.SwitchPMText != "" {
+		v.Add("switch_pm_text", cfg.SwitchPMText)
+	}
+	if cfg.SwitchPMParameter != "" {
+		v.Add("switch_pm_parameter", cfg.SwitchPMParameter)
+	}
 	return v, nil
 }

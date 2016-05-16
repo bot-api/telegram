@@ -334,6 +334,13 @@ func (c *API) SetWebhook(ctx context.Context, cfg WebhookCfg) error {
 	return c.Invoke(ctx, cfg, nil)
 }
 
+// AnswerInlineQuery sends answers to an inline query.
+// On success, True is returned. No more than 50 results per query are allowed.
+func (c *API) AnswerInlineQuery(ctx context.Context, cfg AnswerInlineQueryCfg) (bool, error) {
+	var result bool
+	return result, c.Invoke(ctx, cfg, &result)
+}
+
 // Internal methods
 
 func (c *API) print(msg string, fields map[string]interface{}) {

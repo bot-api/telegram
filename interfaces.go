@@ -36,12 +36,52 @@ type Filer interface {
 
 // ReplyMarkup describes interface for reply_markup keyboards.
 type ReplyMarkup interface {
-	// Markup should return json string.
-	Markup() (string, error)
+	// ReplyMarkup is a fake method that helps to identify implementations
+	ReplyMarkup()
 }
 
 // InputFile describes interface for input files.
 type InputFile interface {
 	Reader() io.Reader
 	Name() string
+}
+
+// InlineQueryResult interface represents one result of an inline query.
+// Telegram clients currently support results of the following 19 types:
+//
+// - InlineQueryResultCachedAudio
+// - InlineQueryResultCachedDocument
+// - InlineQueryResultCachedGif
+// - InlineQueryResultCachedMpeg4Gif
+// - InlineQueryResultCachedPhoto
+// - InlineQueryResultCachedSticker
+// - InlineQueryResultCachedVideo
+// - InlineQueryResultCachedVoice
+// - InlineQueryResultArticle
+// - InlineQueryResultAudio
+// - InlineQueryResultContact
+// - InlineQueryResultDocument
+// - InlineQueryResultGif
+// - InlineQueryResultLocation
+// - InlineQueryResultMpeg4Gif
+// - InlineQueryResultPhoto
+// - InlineQueryResultVenue
+// - InlineQueryResultVideo
+// - InlineQueryResultVoice
+//
+type InlineQueryResult interface {
+	// InlineQueryResult is a fake method that helps to identify implementations
+	InlineQueryResult()
+}
+
+// InputMessageContent interface represents the content of a message
+// to be sent as a result of an inline query.
+// Telegram clients currently support the following 4 types:
+//  - InputTextMessageContent
+//  - InputLocationMessageContent
+//  - InputVenueMessageContent
+//  - InputContactMessageContent
+type InputMessageContent interface {
+	// MessageContent is a fake method that helps to identify implementations
+	InputMessageContent()
 }

@@ -205,6 +205,7 @@ bot.HandleFunc(func(ctx context.Context) error {
 
 ```
 
+Take a look at `./examples/` to know more how to use bot and telegram api.
 
 
 # TODO:
@@ -214,7 +215,13 @@ bot.HandleFunc(func(ctx context.Context) error {
 - [x] Command middleware
 - [ ] Session middleware
 - [ ] Log middleware
+- [ ] Menu middleware
 - [ ] Examples
+    - [x] Command
+    - [x] CallbackAnswer
+    - [x] Inline
+    - [x] Proxy
+    - [ ] Menu
 - [x] Add travis-ci integration
 - [ ] Add coverage badge
 - [ ] Add integration tests
@@ -248,7 +255,7 @@ bot.HandleFunc(func(ctx context.Context) error {
 - [x] getUpdates
 - [x] setWebhook
 - [x] getFile
-- [ ] answerInlineQuery inline bots
+- [x] answerInlineQuery inline bots
 
 #  Supported API v2 methods:
 - [x] sendVenue
@@ -262,8 +269,28 @@ bot.HandleFunc(func(ctx context.Context) error {
 
 # Supported Inline modes
 
-- [ ] inline modes
 
+- [x] InlineQueryResultArticle
+- [x] InlineQueryResultAudio
+- [x] InlineQueryResultContact
+- [x] InlineQueryResultDocument
+- [x] InlineQueryResultGif
+- [x] InlineQueryResultLocation
+- [x] InlineQueryResultMpeg4Gif
+- [x] InlineQueryResultPhoto
+- [x] InlineQueryResultVenue
+- [x] InlineQueryResultVideo
+- [x] InlineQueryResultVoice
+- [ ] InlineQueryResultCachedAudio
+- [ ] InlineQueryResultCachedDocument
+- [ ] InlineQueryResultCachedGif
+- [ ] InlineQueryResultCachedMpeg4Gif
+- [ ] InlineQueryResultCachedPhoto
+- [ ] InlineQueryResultCachedSticker
+- [ ] InlineQueryResultCachedVideo
+- [ ] InlineQueryResultCachedVoice
+- [ ] InputTextMessageContent
+- [ ] InputLocationMessageContent
 
 
 Other bots:

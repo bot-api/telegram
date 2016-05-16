@@ -1,7 +1,9 @@
 package telegram_test
 
 import (
+	"encoding/json"
 	"net/url"
+	"reflect"
 	"testing"
 
 	"github.com/bot-api/telegram"
@@ -91,7 +93,10 @@ func TestBaseMessage_Values(t *testing.T) {
 				},
 				ReplyMarkup: replyBadMarkup{},
 			},
-			expErr: marshalError,
+			expErr: &json.MarshalerError{
+				Type: reflect.TypeOf(replyBadMarkup{}),
+				Err:  marshalError,
+			},
 		},
 		{
 			exp: nil,

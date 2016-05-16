@@ -2,7 +2,9 @@
 package telegram_test
 
 import (
+	"encoding/json"
 	"net/url"
+	"reflect"
 	"testing"
 
 	"github.com/bot-api/telegram"
@@ -151,6 +153,94 @@ func TestUserProfilePhotosCfg_Values(t *testing.T) {
 			expErr: telegram.NewRequiredError(
 				"UserID",
 			),
+		},
+	}
+	for i, tt := range testTable {
+		t.Logf("test #%d", i)
+		values, err := tt.cfg.Values()
+		assert.Equal(t, tt.expErr, err)
+		assert.Equal(t, tt.exp, values)
+	}
+}
+
+func TestAnswerInlineQueryCfg_Name(t *testing.T) {
+	name := "answerInlineQuery"
+	c := telegram.AnswerInlineQueryCfg{}
+	if c.Name() != name {
+		t.Errorf("Expected Name() to be %s, actual %s", name, c.Name())
+	}
+}
+
+func TestAnswerInlineQueryCfg_Values(t *testing.T) {
+	results := []telegram.InlineQueryResult{
+		&telegram.InlineQueryResultArticle{
+			BaseInlineQueryResult: telegram.BaseInlineQueryResult{
+				ID:   "id",
+				Type: "type",
+			},
+			Title: "title",
+		},
+	}
+	resultsEncoded := "[{\"type\":\"type\",\"id\":\"id\",\"title\":\"title\"}]"
+	testTable := []cfgTT{
+		{
+			exp: url.Values{
+				"results":         {resultsEncoded},
+				"inline_query_id": {"10"},
+			},
+			cfg: telegram.AnswerInlineQueryCfg{
+				InlineQueryID: "10",
+				Results:       results,
+			},
+		},
+		{
+			exp: url.Values{
+				"results":             {resultsEncoded},
+				"inline_query_id":     {"10"},
+				"cache_time":          {"60"},
+				"is_personal":         {"true"},
+				"next_offset":         {"offset"},
+				"switch_pm_text":      {"switch_pm_text"},
+				"switch_pm_parameter": {"switch_pm_parameter"},
+			},
+			cfg: telegram.AnswerInlineQueryCfg{
+				InlineQueryID:     "10",
+				Results:           results,
+				CacheTime:         60,
+				IsPersonal:        true,
+				NextOffset:        "offset",
+				SwitchPMText:      "switch_pm_text",
+				SwitchPMParameter: "switch_pm_parameter",
+			},
+		},
+		{
+			cfg: telegram.AnswerInlineQueryCfg{
+				InlineQueryID: "10",
+			},
+			expErr: telegram.NewRequiredError(
+				"Results",
+			),
+		},
+		{
+			cfg: telegram.AnswerInlineQueryCfg{
+				InlineQueryID: "10",
+				Results:       []telegram.InlineQueryResult{},
+			},
+			expErr: telegram.NewRequiredError(
+				"Results",
+			),
+		},
+		{
+			cfg: telegram.AnswerInlineQueryCfg{
+				InlineQueryID: "10",
+				Results: []telegram.InlineQueryResult{
+					badInlineQueryResult{},
+				},
+			},
+			expErr: &json.MarshalerError{
+				Type: reflect.TypeOf(badInlineQueryResult{}),
+				Err:  marshalError,
+			},
 		},
 	}
 	for i, tt := range testTable {

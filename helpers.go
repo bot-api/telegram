@@ -356,3 +356,19 @@ loop:
 	}
 	return rErr
 }
+
+// InlineQuery helpers
+
+// NewInlineQueryResultArticle creates a new inline query article.
+func NewInlineQueryResultArticle(id, title, messageText string) *InlineQueryResultArticle {
+	return &InlineQueryResultArticle{
+		BaseInlineQueryResult: BaseInlineQueryResult{
+			Type: "article",
+			ID:   id,
+			InputMessageContent: InputTextMessageContent{
+				MessageText: messageText,
+			},
+		},
+		Title: title,
+	}
+}
