@@ -83,6 +83,10 @@ type Message struct {
 	// for forwarded messages. Optional.
 	ForwardFrom *User `json:"forward_from,omitempty"`
 
+	// For messages forwarded from a channel,
+	// information about the original channel. Optional.
+	ForwardFromChat *Chat `json:"forward_from_chat,omitempty"`
+
 	// ForwardDate is a unixtime of the original message
 	// for forwarded messages. Optional.
 	ForwardDate int `json:"forward_date"`
@@ -312,6 +316,24 @@ type Chat struct {
 	Username  string `json:"username,omitempty"`
 }
 
+// ChatMember possible statuses
+const (
+	MemberStatus              = "member"
+	CreatorMemberStatus       = "creator"
+	AdministratorMemberStatus = "administrator"
+	LeftMemberStatus          = "left"
+	KickedMemberStatus        = "kicked"
+)
+
+// ChatMember object contains information about one member of the chat.
+type ChatMember struct {
+	// Information about the user.
+	User User `json:"user"`
+	// The member's status in the chat.
+	// One of MemberStatus constants.
+	Status string `json:"status"`
+}
+
 // MetaFile represents meta information about file.
 type MetaFile struct {
 	// FileID is a Unique identifier for this file.
@@ -388,6 +410,8 @@ type Sticker struct {
 
 	// Sticker thumbnail in .webp or .jpg format. Optional.
 	Thumb *PhotoSize `json:"thumb,omitempty"`
+	// Emoji associated with the sticker. Optional.
+	Emoji string `json:"emoji,omitempty"`
 }
 
 // Video object represents an MP4-encoded video.

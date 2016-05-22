@@ -23,7 +23,7 @@ test:
 test_i:
 ifdef API_BOT_TOKEN
 	@echo "$(OK_COLOR)Run integration tests$(NO_COLOR)"
-	@go test -cover -tags integration -run TestI_* ./...
+	@./scripts/coverage_i.sh
 endif
 
 lint:

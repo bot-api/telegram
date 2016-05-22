@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/bot-api/telegram.svg?branch=master)](https://travis-ci.org/bot-api/telegram)  [![Coverage Status](https://coveralls.io/repos/github/bot-api/telegram/badge.svg?branch=master)](https://coveralls.io/github/bot-api/telegram?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/bot-api/telegram)](https://goreportcard.com/report/github.com/bot-api/telegram)
 
-*Alpha version, don't use it.*
-
 Supported go version: 1.5, 1.6, tip
 
 
@@ -223,8 +221,8 @@ Take a look at `./examples/` to know more how to use bot and telegram api.
     - [x] Proxy
     - [ ] Menu
 - [x] Add travis-ci integration
-- [ ] Add coverage badge
-- [ ] Add integration tests
+- [x] Add coverage badge
+- [x] Add integration tests
 
 
 - [ ] Add gopkg version
@@ -263,9 +261,14 @@ Take a look at `./examples/` to know more how to use bot and telegram api.
 - [x] editMessageText
 - [x] editMessageCaption
 - [x] editMessageReplyMarkup
-- [ ] kickChatMember
-- [ ] unbanChatMember
+- [x] kickChatMember
+- [x] unbanChatMember
 - [x] answerCallbackQuery
+- [x] getChat
+- [x] getChatMember
+- [x] getChatMembersCount
+- [x] getChatAdministrators
+- [x] leaveChat
 
 # Supported Inline modes
 

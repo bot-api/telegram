@@ -250,3 +250,274 @@ func TestAnswerInlineQueryCfg_Values(t *testing.T) {
 		assert.Equal(t, tt.exp, values)
 	}
 }
+
+func TestGetChat_Name(t *testing.T) {
+	name := "getChat"
+	c := telegram.GetChatCfg{}
+	if c.Name() != name {
+		t.Errorf("Expected Name() to be %s, actual %s", name, c.Name())
+	}
+}
+
+func TestGetChatCfg_Values(t *testing.T) {
+	testTable := []cfgTT{
+		{
+			exp: url.Values{
+				"chat_id": {"10"},
+			},
+			cfg: telegram.GetChatCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+			},
+		},
+		{
+			exp: nil,
+			cfg: telegram.GetChatCfg{},
+			expErr: telegram.NewRequiredError(
+				"ID", "ChannelUsername",
+			),
+		},
+	}
+	for i, tt := range testTable {
+		t.Logf("test #%d", i)
+		values, err := tt.cfg.Values()
+		assert.Equal(t, tt.expErr, err)
+		assert.Equal(t, tt.exp, values)
+	}
+}
+
+func TestGetChatAdministrators_Name(t *testing.T) {
+	name := "getChatAdministrators"
+	c := telegram.GetChatAdministratorsCfg{}
+	if c.Name() != name {
+		t.Errorf("Expected Name() to be %s, actual %s", name, c.Name())
+	}
+}
+
+func TestGetChatAdministratorsCfg_Values(t *testing.T) {
+	testTable := []cfgTT{
+		{
+			exp: url.Values{
+				"chat_id": {"10"},
+			},
+			cfg: telegram.GetChatAdministratorsCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+			},
+		},
+		{
+			exp: nil,
+			cfg: telegram.GetChatAdministratorsCfg{},
+			expErr: telegram.NewRequiredError(
+				"ID", "ChannelUsername",
+			),
+		},
+	}
+	for i, tt := range testTable {
+		t.Logf("test #%d", i)
+		values, err := tt.cfg.Values()
+		assert.Equal(t, tt.expErr, err)
+		assert.Equal(t, tt.exp, values)
+	}
+}
+
+func TestGetChatMembersCount_Name(t *testing.T) {
+	name := "getChatMembersCount"
+	c := telegram.GetChatMembersCountCfg{}
+	if c.Name() != name {
+		t.Errorf("Expected Name() to be %s, actual %s", name, c.Name())
+	}
+}
+
+func TestGetChatMembersCountCfg_Values(t *testing.T) {
+	testTable := []cfgTT{
+		{
+			exp: url.Values{
+				"chat_id": {"10"},
+			},
+			cfg: telegram.GetChatMembersCountCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+			},
+		},
+		{
+			exp: nil,
+			cfg: telegram.GetChatMembersCountCfg{},
+			expErr: telegram.NewRequiredError(
+				"ID", "ChannelUsername",
+			),
+		},
+	}
+	for i, tt := range testTable {
+		t.Logf("test #%d", i)
+		values, err := tt.cfg.Values()
+		assert.Equal(t, tt.expErr, err)
+		assert.Equal(t, tt.exp, values)
+	}
+}
+
+func TestGetChatMember_Name(t *testing.T) {
+	name := "getChatMember"
+	c := telegram.GetChatMemberCfg{}
+	if c.Name() != name {
+		t.Errorf("Expected Name() to be %s, actual %s", name, c.Name())
+	}
+}
+
+func TestGetChatMemberCfg_Values(t *testing.T) {
+	testTable := []cfgTT{
+		{
+			exp: url.Values{
+				"chat_id": {"10"},
+				"user_id": {"11"},
+			},
+			cfg: telegram.GetChatMemberCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+				UserID:   11,
+			},
+		},
+		{
+			exp: nil,
+			expErr: telegram.NewRequiredError(
+				"UserID",
+			),
+			cfg: telegram.GetChatMemberCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+			},
+		},
+		{
+			exp: nil,
+			cfg: telegram.GetChatMemberCfg{},
+			expErr: telegram.NewRequiredError(
+				"ID", "ChannelUsername",
+			),
+		},
+	}
+	for i, tt := range testTable {
+		t.Logf("test #%d", i)
+		values, err := tt.cfg.Values()
+		assert.Equal(t, tt.expErr, err)
+		assert.Equal(t, tt.exp, values)
+	}
+}
+
+func TestKickChatMember_Name(t *testing.T) {
+	name := "kickChatMember"
+	c := telegram.KickChatMemberCfg{}
+	if c.Name() != name {
+		t.Errorf("Expected Name() to be %s, actual %s", name, c.Name())
+	}
+}
+
+func TestKickChatMemberCfg_Values(t *testing.T) {
+	testTable := []cfgTT{
+		{
+			exp: url.Values{
+				"chat_id": {"10"},
+				"user_id": {"11"},
+			},
+			cfg: telegram.KickChatMemberCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+				UserID:   11,
+			},
+		},
+		{
+			exp: nil,
+			expErr: telegram.NewRequiredError(
+				"UserID",
+			),
+			cfg: telegram.KickChatMemberCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+			},
+		},
+		{
+			exp: nil,
+			cfg: telegram.KickChatMemberCfg{},
+			expErr: telegram.NewRequiredError(
+				"ID", "ChannelUsername",
+			),
+		},
+	}
+	for i, tt := range testTable {
+		t.Logf("test #%d", i)
+		values, err := tt.cfg.Values()
+		assert.Equal(t, tt.expErr, err)
+		assert.Equal(t, tt.exp, values)
+	}
+}
+
+func TestUnbanChatMember_Name(t *testing.T) {
+	name := "unbanChatMember"
+	c := telegram.UnbanChatMemberCfg{}
+	if c.Name() != name {
+		t.Errorf("Expected Name() to be %s, actual %s", name, c.Name())
+	}
+}
+
+func TestUnbanChatMemberCfg_Values(t *testing.T) {
+	testTable := []cfgTT{
+		{
+			exp: url.Values{
+				"chat_id": {"10"},
+				"user_id": {"11"},
+			},
+			cfg: telegram.UnbanChatMemberCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+				UserID:   11,
+			},
+		},
+		{
+			exp: nil,
+			expErr: telegram.NewRequiredError(
+				"UserID",
+			),
+			cfg: telegram.UnbanChatMemberCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+			},
+		},
+		{
+			exp: nil,
+			cfg: telegram.UnbanChatMemberCfg{},
+			expErr: telegram.NewRequiredError(
+				"ID", "ChannelUsername",
+			),
+		},
+	}
+	for i, tt := range testTable {
+		t.Logf("test #%d", i)
+		values, err := tt.cfg.Values()
+		assert.Equal(t, tt.expErr, err)
+		assert.Equal(t, tt.exp, values)
+	}
+}
+
+func TestLeaveChat_Name(t *testing.T) {
+	name := "leaveChat"
+	c := telegram.LeaveChatCfg{}
+	if c.Name() != name {
+		t.Errorf("Expected Name() to be %s, actual %s", name, c.Name())
+	}
+}
+
+func TestLeaveChatCfg_Values(t *testing.T) {
+	testTable := []cfgTT{
+		{
+			exp: url.Values{
+				"chat_id": {"10"},
+			},
+			cfg: telegram.LeaveChatCfg{
+				BaseChat: telegram.BaseChat{ID: 10},
+			},
+		},
+		{
+			exp: nil,
+			cfg: telegram.LeaveChatCfg{},
+			expErr: telegram.NewRequiredError(
+				"ID", "ChannelUsername",
+			),
+		},
+	}
+	for i, tt := range testTable {
+		t.Logf("test #%d", i)
+		values, err := tt.cfg.Values()
+		assert.Equal(t, tt.expErr, err)
+		assert.Equal(t, tt.exp, values)
+	}
+}

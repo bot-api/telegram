@@ -31,6 +31,145 @@ func (c BaseChat) Values() (url.Values, error) {
 	return nil, NewRequiredError("ID", "ChannelUsername")
 }
 
+// GetChatCfg contains information about a getChat request.
+type GetChatCfg struct {
+	BaseChat
+}
+
+// Name returns method name
+func (cfg GetChatCfg) Name() string {
+	return getChatMethod
+}
+
+// Values returns a url.Values representation of GetChatCfg.
+// Returns RequiredError if Chat is not set.
+func (cfg GetChatCfg) Values() (url.Values, error) {
+	return cfg.BaseChat.Values()
+}
+
+// GetChatAdministratorsCfg contains information about a getChat request.
+type GetChatAdministratorsCfg struct {
+	BaseChat
+}
+
+// Name returns method name
+func (cfg GetChatAdministratorsCfg) Name() string {
+	return getChatAdministratorsMethod
+}
+
+// Values returns a url.Values representation of GetChatCfg.
+// Returns RequiredError if Chat is not set.
+func (cfg GetChatAdministratorsCfg) Values() (url.Values, error) {
+	return cfg.BaseChat.Values()
+}
+
+// GetChatMembersCountCfg contains information about a getChatMemberCount request.
+type GetChatMembersCountCfg struct {
+	BaseChat
+}
+
+// Name returns method name
+func (cfg GetChatMembersCountCfg) Name() string {
+	return getChatMembersCountMethod
+}
+
+// Values returns a url.Values representation of GetChatMembersCountCfg.
+// Returns RequiredError if Chat is not set.
+func (cfg GetChatMembersCountCfg) Values() (url.Values, error) {
+	return cfg.BaseChat.Values()
+}
+
+// GetChatMemberCfg contains information about a getChatMember request.
+type GetChatMemberCfg struct {
+	BaseChat
+	UserID int64 `json:"user_id"`
+}
+
+// Name returns method name
+func (cfg GetChatMemberCfg) Name() string {
+	return getChatMemberMethod
+}
+
+// Values returns a url.Values representation of GetChatMemberCfg.
+// Returns RequiredError if Chat or UserID are not set.
+func (cfg GetChatMemberCfg) Values() (url.Values, error) {
+	v, err := cfg.BaseChat.Values()
+	if err != nil {
+		return nil, err
+	}
+	if cfg.UserID == 0 {
+		return nil, NewRequiredError("UserID")
+	}
+	v.Add("user_id", strconv.FormatInt(cfg.UserID, 10))
+	return v, nil
+}
+
+// KickChatMemberCfg contains information about a kickChatMember request.
+type KickChatMemberCfg struct {
+	BaseChat
+	UserID int64 `json:"user_id"`
+}
+
+// Name returns method name
+func (cfg KickChatMemberCfg) Name() string {
+	return kickChatMemberMethod
+}
+
+// Values returns a url.Values representation of KickChatMemberCfg.
+// Returns RequiredError if Chat or UserID are not set.
+func (cfg KickChatMemberCfg) Values() (url.Values, error) {
+	v, err := cfg.BaseChat.Values()
+	if err != nil {
+		return nil, err
+	}
+	if cfg.UserID == 0 {
+		return nil, NewRequiredError("UserID")
+	}
+	v.Add("user_id", strconv.FormatInt(cfg.UserID, 10))
+	return v, nil
+}
+
+// UnbanChatMemberCfg contains information about a unbanChatMember request.
+type UnbanChatMemberCfg struct {
+	BaseChat
+	UserID int64 `json:"user_id"`
+}
+
+// Name returns method name
+func (cfg UnbanChatMemberCfg) Name() string {
+	return unbanChatMemberMethod
+}
+
+// Values returns a url.Values representation of UnbanChatMemberCfg.
+// Returns RequiredError if Chat or UserID are not set.
+func (cfg UnbanChatMemberCfg) Values() (url.Values, error) {
+	v, err := cfg.BaseChat.Values()
+	if err != nil {
+		return nil, err
+	}
+	if cfg.UserID == 0 {
+		return nil, NewRequiredError("UserID")
+	}
+	v.Add("user_id", strconv.FormatInt(cfg.UserID, 10))
+	return v, nil
+}
+
+// LeaveChatCfg contains information about a leaveChat request.
+type LeaveChatCfg struct {
+	BaseChat
+}
+
+// Name returns method name
+func (cfg LeaveChatCfg) Name() string {
+	return leaveChatMethod
+}
+
+// Values returns a url.Values representation of LeaveChatCfg.
+// Returns RequiredError if Chat is not set.
+func (cfg LeaveChatCfg) Values() (url.Values, error) {
+	return cfg.BaseChat.Values()
+}
+
 // MeCfg contains information about a getMe request.
 type MeCfg struct{}
 

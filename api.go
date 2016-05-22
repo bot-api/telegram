@@ -119,6 +119,103 @@ func (c *API) GetMe(ctx context.Context) (*User, error) {
 	return u, nil
 }
 
+// GetChat returns up to date information about the chat
+// (current name of the user for one-on-one conversations,
+// current username of a user, group or channel, etc.).
+// Returns a Chat object on success.
+func (c *API) GetChat(ctx context.Context, cfg GetChatCfg) (*Chat, error) {
+	chat := &Chat{}
+	if err := c.Invoke(ctx, cfg, chat); err != nil {
+		return nil, err
+	}
+	return chat, nil
+}
+
+// GetChatAdministrators returns a list of administrators in a chat.
+// On success, returns an Array of ChatMember objects
+// that contains information about all chat administrators
+// except other bots. If the chat is a group or a supergroup
+// and no administrators were appointed, only the creator will be returned.
+func (c *API) GetChatAdministrators(
+	ctx context.Context,
+	cfg GetChatAdministratorsCfg) ([]ChatMember, error) {
+
+	chatMembers := []ChatMember{}
+	if err := c.Invoke(ctx, cfg, &chatMembers); err != nil {
+		return nil, err
+	}
+	return chatMembers, nil
+}
+
+// GetChatMembersCount returns the number of members in a chat.
+func (c *API) GetChatMembersCount(
+	ctx context.Context,
+	cfg GetChatMembersCountCfg) (int, error) {
+
+	var count int
+	if err := c.Invoke(ctx, cfg, &count); err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+// GetChatMember returns information about a member of a chat.
+func (c *API) GetChatMember(
+	ctx context.Context,
+	cfg GetChatMemberCfg) (*ChatMember, error) {
+
+	member := &ChatMember{}
+	if err := c.Invoke(ctx, cfg, member); err != nil {
+		return nil, err
+	}
+	return member, nil
+}
+
+// KickChatMember kicks a user from a group or a supergroup.
+// In the case of supergroups, the user will not be able to return
+// to the group on their own using invite links, etc., unless unbanned first.
+// The bot must be an administrator in the group for this to work.
+// Returns True on success.
+func (c *API) KickChatMember(
+	ctx context.Context,
+	cfg KickChatMemberCfg) (bool, error) {
+
+	var result bool
+	if err := c.Invoke(ctx, cfg, &result); err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+// UnbanChatMember unbans a previously kicked user in a supergroup.
+// The user will not return to the group automatically,
+// but will be able to join via link, etc.
+// The bot must be an administrator in the group for this to work.
+// Returns True on success.
+func (c *API) UnbanChatMember(
+	ctx context.Context,
+	cfg UnbanChatMemberCfg) (bool, error) {
+
+	var result bool
+	if err := c.Invoke(ctx, cfg, &result); err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+// LeaveChat method helps your bot to leave a group, supergroup or channel.
+// Returns True on success.
+func (c *API) LeaveChat(
+	ctx context.Context,
+	cfg LeaveChatCfg) (bool, error) {
+
+	var result bool
+	if err := c.Invoke(ctx, cfg, &result); err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
 // GetUpdates requests incoming updates using long polling.
 // This method will not work if an outgoing webhook is set up.
 // In order to avoid getting duplicate updates,

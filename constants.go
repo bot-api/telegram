@@ -22,9 +22,16 @@ const (
 
 // internal constants for method names
 const (
-	getMeMethod                = "getMe"
-	getUpdatesMethod           = "getUpdates"
-	getUserProfilePhotosMethod = "getUserProfilePhotos"
+	getMeMethod                 = "getMe"
+	getUpdatesMethod            = "getUpdates"
+	getUserProfilePhotosMethod  = "getUserProfilePhotos"
+	getChatMethod               = "getChat"
+	getChatAdministratorsMethod = "getChatAdministrators"
+	getChatMembersCountMethod   = "getChatMembersCount"
+	getChatMemberMethod         = "getChatMember"
+	kickChatMemberMethod        = "kickChatMember"
+	unbanChatMemberMethod       = "unbanChatMember"
+	leaveChatMethod             = "leaveChat"
 
 	sendChatActionMethod = "sendChatAction"
 	sendMessageMethod    = "sendMessage"
