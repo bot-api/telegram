@@ -141,7 +141,7 @@ func openChat(
 				}
 			}
 		}
-	}(upCtx, telegram.UpdateCfg{Timeout: 3}, updateCh)
+	}(upCtx, telegram.UpdateCfg{Timeout: 30}, updateCh)
 
 	go func() {
 		for {

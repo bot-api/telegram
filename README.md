@@ -1,6 +1,4 @@
-# telegram
-
-[![Build Status](https://travis-ci.org/bot-api/telegram.svg?branch=master)](https://travis-ci.org/bot-api/telegram)  [![Coverage Status](https://coveralls.io/repos/github/bot-api/telegram/badge.svg?branch=master)](https://coveralls.io/github/bot-api/telegram?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/bot-api/telegram)](https://goreportcard.com/report/github.com/bot-api/telegram)
+# Telegram Bot Api  [![GoDoc](https://godoc.org/github.com/bot-api/telegram?status.svg)](http://godoc.org/github.com/bot-api/telegram) [![Build Status](https://travis-ci.org/bot-api/telegram.svg?branch=master)](https://travis-ci.org/bot-api/telegram)  [![Coverage Status](https://coveralls.io/repos/github/bot-api/telegram/badge.svg?branch=master)](https://coveralls.io/github/bot-api/telegram?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/bot-api/telegram)](https://goreportcard.com/report/github.com/bot-api/telegram)
 
 Supported go version: 1.5, 1.6, tip
 
@@ -229,12 +227,6 @@ Take a look at `./examples/` to know more how to use bot and telegram api.
 - [ ] Improve documentation
 - [ ] Benchmark ffjson and easyjson.
 - [ ] Add GAE example. 
-- [ ] Handle 
-        status code: 409
-        received: {"ok":false,"error_code":409,"description":"[Error]: Conflict: another webhook is active"}
-
-
-
 
 
 # Supported API methods:

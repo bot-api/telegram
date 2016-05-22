@@ -26,6 +26,9 @@ type Update struct {
 	// Message is a new incoming message of any kind:
 	// text, photo, sticker, etc. Optional.
 	Message *Message `json:"message,omitempty"`
+	// New version of a message that is known to the bot and was edited.
+	// Optional.
+	EditedMessage *Message `json:"edited_message,omitempty"`
 	// InlineQuery is a new incoming inline query. Optional.
 	InlineQuery *InlineQuery `json:"inline_query,omitempty"`
 	// ChosenInlineResult is a result of an inline query
@@ -40,10 +43,17 @@ func (u Update) HasMessage() bool {
 	return u.Message != nil
 }
 
+// IsEdited returns true if update object contains EditedMessage field
+func (u Update) IsEdited() bool {
+	return u.EditedMessage != nil
+}
+
 // From takes User from Message, CallbackQuery, InlineQuery or ChosenInlineResult
 func (u Update) From() (from *User) {
 	switch {
 	case u.Message != nil:
+		from = u.Message.From
+	case u.EditedMessage != nil:
 		from = u.Message.From
 	case u.CallbackQuery != nil:
 		from = u.CallbackQuery.From
@@ -60,6 +70,8 @@ func (u Update) Chat() (chat *Chat) {
 	switch {
 	case u.Message != nil:
 		chat = &u.Message.Chat
+	case u.EditedMessage != nil:
+		chat = &u.EditedMessage.Chat
 	case u.CallbackQuery != nil && u.CallbackQuery.Message != nil:
 		chat = &u.CallbackQuery.Message.Chat
 	}
@@ -96,6 +108,11 @@ type Message struct {
 	// contain further ReplyToMessage fields even if it
 	// itself is a reply. Optional.
 	ReplyToMessage *Message `json:"reply_to_message,omitempty"`
+
+	// Date the message was last edited in Unix time
+	// Zero value means object wasn't edited.
+	// Optional.
+	EditDate int `json:"edit_date,omitempty"`
 
 	// For text messages, special entities like usernames,
 	// URLs, bot commands, etc. that appear in the text. Optional
@@ -268,7 +285,8 @@ type MessageEntity struct {
 	// Type of the entity. One of mention ( @username ), hashtag,
 	// bot_command, url, email, bold (bold text),
 	// italic (italic text), code (monowidth string),
-	// pre (monowidth block), text_link (for clickable text URLs)
+	// pre (monowidth block), text_link (for clickable text URLs),
+	// text_mention (for users without usernames)
 	// Use constants SomethingEntityType instead of string.
 	Type string `json:"type"`
 	// Offset in UTF‐16 code units to the start of the entity
@@ -278,6 +296,8 @@ type MessageEntity struct {
 	// For “text_link” only, url that will be opened
 	// after user taps on the text. Optional
 	URL string `json:"url,omitempty"`
+	// For “text_mention” only, the mentioned user. Optional.
+	User *User `json:"user,omitempty"`
 }
 
 // User object represents a Telegram user or bot.
@@ -294,14 +314,6 @@ type User struct {
 	Username string `json:"username,omitempty"`
 }
 
-// Type of chat
-const (
-	PrivateChatType    = "private"
-	GroupChatType      = "group"
-	SuperGroupChatType = "supergroup"
-	ChannelChatType    = "channel"
-)
-
 // Chat object represents a Telegram user, bot or group chat.
 // Title for channels and group chats
 type Chat struct {
@@ -315,15 +327,6 @@ type Chat struct {
 	LastName  string `json:"last_name,omitempty"`
 	Username  string `json:"username,omitempty"`
 }
-
-// ChatMember possible statuses
-const (
-	MemberStatus              = "member"
-	CreatorMemberStatus       = "creator"
-	AdministratorMemberStatus = "administrator"
-	LeftMemberStatus          = "left"
-	KickedMemberStatus        = "kicked"
-)
 
 // ChatMember object contains information about one member of the chat.
 type ChatMember struct {
