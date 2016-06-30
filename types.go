@@ -22,7 +22,7 @@ type Update struct {
 	// UpdateID is the update‘s unique identifier.
 	// Update identifiers start from a certain positive number
 	// and increase sequentially
-	UpdateID uint64 `json:"update_id"`
+	UpdateID int64 `json:"update_id"`
 	// Message is a new incoming message of any kind:
 	// text, photo, sticker, etc. Optional.
 	Message *Message `json:"message,omitempty"`

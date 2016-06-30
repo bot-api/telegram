@@ -37,6 +37,19 @@ func NewMessagef(chatID int64, text string, args ...interface{}) MessageCfg {
 	}
 }
 
+// NewKeyboard creates keyboard by matrix i*j.
+func NewKeyboard(buttons [][]string) [][]KeyboardButton {
+	rows := make([][]KeyboardButton, len(buttons))
+	for i, colButtons := range buttons {
+		cols := make([]KeyboardButton, len(colButtons))
+		for j, button := range colButtons {
+			cols[j].Text = button
+		}
+		rows[i] = cols
+	}
+	return rows
+}
+
 // NewHKeyboard creates keyboard with horizontal buttons only.
 // [ first ] [ second ] [ third ]
 func NewHKeyboard(buttons ...string) [][]KeyboardButton {

@@ -595,7 +595,7 @@ func (c *API) makeRequest(
 			ErrorCode:   apiResponse.ErrorCode,
 		}
 	}
-	if dst != nil {
+	if dst != nil && apiResponse.Result != nil {
 		err = json.Unmarshal(*apiResponse.Result, dst)
 	}
 	return err
