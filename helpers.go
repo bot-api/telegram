@@ -115,7 +115,10 @@ func NewUserProfilePhotos(userID int64) UserProfilePhotosCfg {
 //
 // offset is the last Update ID to include.
 // You likely want to set this to the last Update ID plus 1.
-func NewUpdate(offset uint64) UpdateCfg {
+// The negative offset can be specified to retrieve updates starting
+// from -offset update from the end of the updates queue.
+// All previous updates will forgotten.
+func NewUpdate(offset int64) UpdateCfg {
 	return UpdateCfg{
 		Offset:  offset,
 		Limit:   0,

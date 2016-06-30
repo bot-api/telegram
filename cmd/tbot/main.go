@@ -276,7 +276,7 @@ loop:
 				}
 				fallthrough
 			case 1:
-				cfg.Offset, err = strconv.ParseUint(args[0], 10, 64)
+				cfg.Offset, err = strconv.ParseInt(args[0], 10, 64)
 				if err != nil {
 					log.Println(err.Error())
 					continue loop
