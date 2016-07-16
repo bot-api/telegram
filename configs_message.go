@@ -69,7 +69,7 @@ type MessageCfg struct {
 	Text string
 	// Send Markdown or HTML, if you want Telegram apps to show
 	// bold, italic, fixed-width text or inline URLs in your bot's message.
-	// Use one of constants: ModeHTML, ModeMarkdown.
+	// Use one of constants: HTML, Markdown.
 	ParseMode string
 	// Disables link previews for links in this message.
 	DisableWebPagePreview bool
