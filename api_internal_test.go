@@ -86,7 +86,7 @@ func TestApi_makeRequest_testContextCancel(t *testing.T) {
 	cancelReq()
 	// receive error from makeRequest
 	err := <-errCh
-	assert.Equal(t, context.Canceled, err)
+	assert.Equal(t, context.Canceled, err, "Actual err %v", err)
 
 }
 

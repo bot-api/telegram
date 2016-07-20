@@ -2,14 +2,16 @@
 package telegram_test
 
 import (
+	"bytes"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/bot-api/telegram"
-	"github.com/jarcoal/httpmock"
+	"github.com/m0sth8/httpmock"
 	"golang.org/x/net/context"
 	"gopkg.in/stretchr/testify.v1/assert"
+	"gopkg.in/stretchr/testify.v1/require"
 )
 
 var apiToken = "token"
@@ -283,4 +285,42 @@ func TestAPI_GetUserProfilePhotos(t *testing.T) {
 		httpmock.Reset()
 
 	}
+}
+
+func TestAPI_DownloadFile(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	defer cancel()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	api := telegram.New(apiToken)
+
+	httpmock.RegisterResponder(
+		"POST",
+		"https://api.telegram.org/bottoken/getFile",
+		httpmock.NewStringResponder(200, `
+			{
+			    "ok": true,
+			    "result":
+			    {
+			    	"file_path": "path_to_file",
+                    		"file_id": "file_id"
+			    }
+			}`,
+		),
+	)
+	httpmock.RegisterResponder(
+		"GET",
+		"https://api.telegram.org/file/bottoken/path_to_file",
+		httpmock.NewStringResponder(200, "FILE DATA"),
+	)
+	f, err := api.GetFile(ctx, telegram.FileCfg{FileID: "file_id"})
+	require.NoError(t, err)
+	assert.Equal(t, "file_id", f.FileID)
+	assert.Equal(t, "https://api.telegram.org/file/bottoken/path_to_file", f.Link)
+
+	buf := bytes.NewBuffer(nil)
+	err = api.DownloadFile(ctx, telegram.FileCfg{FileID: "file_id"}, buf)
+	require.NoError(t, err)
+	assert.Equal(t, "FILE DATA", buf.String())
+
 }

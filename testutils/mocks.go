@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	"github.com/bot-api/telegram"
-	"github.com/jarcoal/httpmock"
+	"github.com/m0sth8/httpmock"
 	"golang.org/x/net/context"
 )
 
