@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/bot-api/telegram"
-	"github.com/jarcoal/httpmock"
+	"github.com/m0sth8/httpmock"
 	"golang.org/x/net/context"
 	"gopkg.in/stretchr/testify.v1/assert"
 	"gopkg.in/stretchr/testify.v1/require"
@@ -285,7 +285,9 @@ func TestBot_Serve(t *testing.T) {
 	cancel()
 	select {
 	case err := <-errCh:
-		require.Equal(t, err, context.Canceled)
+		require.Equal(t, err, context.Canceled, "exp %v", err.Error())
+	case <-time.After(time.Second * 5):
+		t.Fatal("Server should be cancelled")
 	}
 }
 

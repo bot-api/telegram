@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"golang.org/x/net/context"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 const (
@@ -262,6 +261,38 @@ func (c *API) GetFile(ctx context.Context, cfg FileCfg) (*File, error) {
 	}
 	file.Link = fmt.Sprintf(c.fileEndpoint, c.token, file.FilePath)
 	return &file, nil
+}
+
+// DownloadFile downloads file from telegram servers to w
+//
+// Requires FileID
+func (c *API) DownloadFile(ctx context.Context, cfg FileCfg, w io.Writer) error {
+	f, err := c.GetFile(ctx, cfg)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest("GET", f.Link, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			if c.debug {
+				c.print("body close error", map[string]interface{}{
+					"error": err.Error(),
+				})
+			}
+		}
+	}()
+	_, err = io.Copy(w, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // AnswerCallbackQuery sends a response to an inline query callback.
@@ -536,12 +567,8 @@ func (c *API) makeRequest(
 	var err error
 	var resp *http.Response
 
-	if httpClient, ok := c.client.(*http.Client); ok {
-		resp, err = ctxhttp.Do(ctx, httpClient, req)
-	} else {
-		// TODO: implement cancel logic for non http.Client
-		resp, err = c.client.Do(req)
-	}
+	resp, err = makeRequest(ctx, c.client, req)
+
 	if err != nil {
 		return err
 	}

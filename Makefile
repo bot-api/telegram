@@ -14,11 +14,11 @@ prepare: fmt vet checkfmt errcheck test race lint
 
 test_v:
 	@echo "$(OK_COLOR)Test packages$(NO_COLOR)"
-	@go test -cover -v ./...
+	@go test -timeout 1m -cover -v ./...
 
 test:
 	@echo "$(OK_COLOR)Test packages$(NO_COLOR)"
-	@go test -cover ./...
+	@go test -timeout 10s -cover ./...
 
 test_i:
 ifdef API_BOT_TOKEN
