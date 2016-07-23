@@ -8,6 +8,15 @@ import (
 	"strconv"
 )
 
+// Assert interfaces
+var _ Filer = (*PhotoCfg)(nil)
+var _ Filer = (*AudioCfg)(nil)
+var _ Filer = (*VideoCfg)(nil)
+var _ Filer = (*VoiceCfg)(nil)
+var _ Filer = (*DocumentCfg)(nil)
+var _ Filer = (*StickerCfg)(nil)
+var _ Filer = (*WebhookCfg)(nil)
+
 // BaseMessage is a base type for all message config types.
 // Implements Messenger interface.
 type BaseMessage struct {
@@ -278,6 +287,11 @@ type BaseFile struct {
 	InputFile InputFile
 }
 
+// GetFileID returns fileID if it's exist
+func (b BaseFile) GetFileID() string {
+	return b.FileID
+}
+
 // Exist returns true if file exists on telegram servers
 func (b BaseFile) Exist() bool {
 	return b.FileID != ""
@@ -298,6 +312,12 @@ func (b BaseFile) Values() (url.Values, error) {
 		v.Add("mime_type", b.MimeType)
 	}
 	return v, nil
+}
+
+// Reset method removes FileID and sets new InputFile
+func (b *BaseFile) Reset(i InputFile) {
+	b.FileID = ""
+	b.InputFile = i
 }
 
 // PhotoCfg contains information about a SendPhoto request.

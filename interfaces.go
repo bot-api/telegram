@@ -32,6 +32,10 @@ type Filer interface {
 	File() InputFile
 	// Exist returns true if file exists on telegram servers
 	Exist() bool
+	// Reset removes FileID and sets new InputFile
+	Reset(InputFile)
+	// GetFileID returns fileID if it's exist
+	GetFileID() string
 }
 
 // ReplyMarkup describes interface for reply_markup keyboards.

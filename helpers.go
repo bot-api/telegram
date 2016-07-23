@@ -295,6 +295,7 @@ func CloneMessage(msg *Message, baseMessage *BaseMessage) Messenger {
 				BaseMessage: base,
 				FileID:      msg.Photo[len(msg.Photo)-1].FileID,
 			},
+			Caption: msg.Caption,
 		}
 	}
 	if msg.Location != nil {
@@ -315,6 +316,9 @@ func CloneMessage(msg *Message, baseMessage *BaseMessage) Messenger {
 				BaseMessage: base,
 				FileID:      msg.Audio.FileID,
 			},
+			Duration:  msg.Audio.Duration,
+			Performer: msg.Audio.Performer,
+			Title:     msg.Audio.Title,
 		}
 	}
 	if msg.Voice != nil {
@@ -323,6 +327,7 @@ func CloneMessage(msg *Message, baseMessage *BaseMessage) Messenger {
 				BaseMessage: base,
 				FileID:      msg.Voice.FileID,
 			},
+			Duration: msg.Voice.Duration,
 		}
 	}
 	if msg.Document != nil {
