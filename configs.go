@@ -359,6 +359,16 @@ func (cfg WebhookCfg) Exist() bool {
 	return cfg.Certificate == nil
 }
 
+// Reset method sets new Certificate
+func (cfg *WebhookCfg) Reset(i InputFile) {
+	cfg.Certificate = i
+}
+
+// GetFileID for webhook is always empty
+func (cfg *WebhookCfg) GetFileID() string {
+	return ""
+}
+
 // AnswerCallbackCfg contains information on making a anserCallbackQuery response.
 type AnswerCallbackCfg struct {
 	CallbackQueryID string `json:"callback_query_id"`
