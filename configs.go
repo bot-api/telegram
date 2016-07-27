@@ -31,6 +31,11 @@ func (c BaseChat) Values() (url.Values, error) {
 	return nil, NewRequiredError("ID", "ChannelUsername")
 }
 
+// SetChatID sets new chat id
+func (c *BaseChat) SetChatID(id int64) {
+	c.ID = id
+}
+
 // GetChatCfg contains information about a getChat request.
 type GetChatCfg struct {
 	BaseChat
