@@ -26,6 +26,8 @@ type Update struct {
 	// Message is a new incoming message of any kind:
 	// text, photo, sticker, etc. Optional.
 	Message *Message `json:"message,omitempty"`
+	// Incoming post from channels
+	ChannelPost *Message `json:"channel_post,omitempty"`
 	// New version of a message that is known to the bot and was edited.
 	// Optional.
 	EditedMessage *Message `json:"edited_message,omitempty"`
@@ -43,16 +45,23 @@ func (u Update) HasMessage() bool {
 	return u.Message != nil
 }
 
+// HasPost returns true if update object contains ChannelPost field
+func (u Update) HasPost() bool {
+	return u.ChannelPost != nil
+}
+
 // IsEdited returns true if update object contains EditedMessage field
 func (u Update) IsEdited() bool {
 	return u.EditedMessage != nil
 }
 
-// From takes User from Message, CallbackQuery, InlineQuery or ChosenInlineResult
+// From takes User from Message, CallbackQuery,ChannelPost, InlineQuery or ChosenInlineResult
 func (u Update) From() (from *User) {
 	switch {
 	case u.Message != nil:
 		from = u.Message.From
+	case u.ChannelPost != nil:
+		from = u.ChannelPost.From
 	case u.EditedMessage != nil:
 		from = u.Message.From
 	case u.CallbackQuery != nil:
@@ -70,6 +79,8 @@ func (u Update) Chat() (chat *Chat) {
 	switch {
 	case u.Message != nil:
 		chat = &u.Message.Chat
+	case u.ChannelPost != nil:
+		chat = &u.ChannelPost.Chat
 	case u.EditedMessage != nil:
 		chat = &u.EditedMessage.Chat
 	case u.CallbackQuery != nil && u.CallbackQuery.Message != nil:
