@@ -45,8 +45,8 @@ func (u Update) HasMessage() bool {
 	return u.Message != nil
 }
 
-// HasPost returns true if update object contains ChannelPost field
-func (u Update) HasPost() bool {
+// HasChannelPost returns true if update object contains ChannelPost field
+func (u Update) HasChannelPost() bool {
 	return u.ChannelPost != nil
 }
 
