@@ -1,6 +1,6 @@
 # Telegram Bot Api  [![GoDoc](https://godoc.org/github.com/bot-api/telegram?status.svg)](http://godoc.org/github.com/bot-api/telegram) [![Build Status](https://travis-ci.org/bot-api/telegram.svg?branch=master)](https://travis-ci.org/bot-api/telegram)  [![Coverage Status](https://coveralls.io/repos/github/bot-api/telegram/badge.svg?branch=master)](https://coveralls.io/github/bot-api/telegram?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/bot-api/telegram)](https://goreportcard.com/report/github.com/bot-api/telegram)
 
-Supported go version: 1.5, 1.6, tip
+Supported go version: 1.5+.
 
 
 Implementation of the telegram bot API, inspired by github.com/go-telegram-bot-api/telegram-bot-api.
