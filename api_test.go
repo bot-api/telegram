@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/bot-api/telegram"
-	"github.com/m0sth8/httpmock"
+	"github.com/jarcoal/httpmock"
 	"golang.org/x/net/context"
 	"gopkg.in/stretchr/testify.v1/assert"
 	"gopkg.in/stretchr/testify.v1/require"
@@ -323,4 +323,53 @@ func TestAPI_DownloadFile(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "FILE DATA", buf.String())
 
+}
+
+func TestSplittingBigMessages(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	var buffer bytes.Buffer
+	for i := 0; i < telegram.MaximumMessageLength+1; i++ {
+		buffer.WriteString("a")
+	}
+	message := buffer.String()
+	msg := telegram.NewMessage(123, message)
+	defer cancel()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	api := telegram.New(apiToken)
+
+	httpmock.RegisterResponder(
+		"POST",
+		"https://api.telegram.org/bottoken/sendMessage",
+		httpmock.NewStringResponder(200, `
+		{
+			"result": {
+				"message": {
+				  "text": "sdfsdfs",
+				  "date": 1552220293,
+				  "chat": {
+					"type": "private",
+					"username": "YappoFTW",
+					"first_name": "Alexander",
+					"id": 53853963
+				  },
+				  "from": {
+					"language_code": "en",
+					"username": "YappoFTW",
+					"first_name": "Alexander",
+					"is_bot": false,
+					"id": 53853963
+				  },
+				  "message_id": 2
+				},
+				"update_id": 576705363
+			},
+			"ok": true
+		}`,
+		),
+	)
+
+	_, err := api.SplitAndSendMessage(ctx, msg)
+	require.NoError(t, err)
+	assert.Equal(t, 2, httpmock.GetTotalCallCount())
 }

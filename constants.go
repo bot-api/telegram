@@ -104,3 +104,8 @@ const (
 	LeftMemberStatus          = "left"
 	KickedMemberStatus        = "kicked"
 )
+
+// Telegram constants
+const (
+	MaximumMessageLength = 4096
+)
