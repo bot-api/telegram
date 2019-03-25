@@ -336,6 +336,28 @@ func (c *API) SendMessage(
 	return c.Send(ctx, cfg)
 }
 
+// SplitAndSendMessage splits original message if it's larger that maximum allowed Telegram message and sends splitted results
+func (c *API) SplitAndSendMessage(
+	ctx context.Context,
+	cfg MessageCfg) ([]*Message, error) {
+
+	chatID := cfg.ID
+	messageTexts := SplitMessageString(cfg.Text)
+	var err error
+	var sentMessageP *Message
+
+	var resultMessagesP []*Message
+	for text := range messageTexts {
+		sentMessageP, err = c.Send(ctx, NewMessagef(chatID, text))
+		if err != nil {
+			return resultMessagesP, err
+		}
+		resultMessagesP = append(resultMessagesP, sentMessageP)
+	}
+
+	return resultMessagesP, nil
+}
+
 // SendSticker sends message with sticker.
 func (c *API) SendSticker(
 	ctx context.Context,
